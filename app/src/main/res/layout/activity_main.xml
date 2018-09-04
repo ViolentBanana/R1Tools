@@ -104,7 +104,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:text="显示返回条"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                     <Button
                         android:id="@+id/color_bg_destory"
@@ -112,7 +112,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:text="关闭返回条"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                     <Button
                         android:id="@+id/color_bg_commit"
@@ -192,24 +192,19 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="使用说明：\n1.首先请点击获取悬浮窗权限，获取悬浮窗权限成功以后左侧会出现一条灰色的浮层
-                \n2.点击开启辅助功能，找到s8手势返回服务，并确认打开
-\n3.点击设置透明，讲左侧灰色覆盖变成透明
-\n4.获取通知权限增加程序存活（非必选）
-\n5.点击自动启动，权限管理-允许被系统启动。勾选后清除后台功能依然可以使用
-\n6.在所有界面，从屏幕的左侧向右滑动，就可以实现返回键功能。" />
+                android:text="@string/how_to_use" />
 
             <TextView
 
                 android:layout_marginTop="20dp"
                 android:layout_gravity="right"
-                android:text="ps:如果不想继续使用，卸载程序后，重启手机即可"
+                android:text="@string/ps"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <TextView
                 android:layout_marginTop="10dp"
                 android:layout_gravity="right"
-                android:text="作者：CHEN  版本v1.0.0"
+                android:text="@string/chen_v1_0_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -217,7 +212,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_gravity="right"
                 android:layout_marginBottom="20dp"
-                android:text="如有问题可咨询邮箱:system.c92@gmail.com"
+                android:text="@string/system_c92_gmail_com"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
