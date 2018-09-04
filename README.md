@@ -1,5 +1,6 @@
 # SumsungS8VirtualKey
-for android
+for android Gesture return 
+<br><br>安卓手势返回
 
 ## **使用说明：**
 
