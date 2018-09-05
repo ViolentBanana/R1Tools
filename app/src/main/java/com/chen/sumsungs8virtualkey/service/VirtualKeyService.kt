@@ -1,4 +1,4 @@
-package com.chen.sumsungs8virtualkey
+package com.chen.sumsungs8virtualkey.service
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
@@ -20,6 +20,7 @@ import android.view.accessibility.AccessibilityManager
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.chen.sumsungs8virtualkey.R
 import com.chen.sumsungs8virtualkey.utils.IHandleMessage
 
 import com.chen.sumsungs8virtualkey.utils.LogUtils
@@ -99,7 +100,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
     @SuppressLint("ClickableViewAccessibility")
     fun createFloatView() {
 
-        if (!VirtualKeyService.isRunning)
+        if (!isRunning)
             return
 
         if (mFloatLayout == null) {
@@ -198,7 +199,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
                     if (mIsMove && isMoveEnough && !mTouchTimeOut) {
                         isClick = true
                         mIsMove = false
-                        VirtualKeyService.service!!.clickBackKey()
+                        service!!.clickBackKey()
                         return true
                     } else {
                         Log.e(TAG, "mIsMove:" + mIsMove + "/isMoveEnough" + isMoveEnough +

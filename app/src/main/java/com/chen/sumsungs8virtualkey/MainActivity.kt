@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.chen.sumsungs8virtualkey.service.VirtualKeyService
 
 import com.chen.sumsungs8virtualkey.utils.CUtils
 import com.chen.sumsungs8virtualkey.utils.LogUtils
@@ -102,14 +103,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.color_bg_create -> {
                 if (VirtualKeyService.isRunning)
-                    VirtualKeyService.service.createFloatView()
+                    VirtualKeyService.service!!.createFloatView()
                 else
                     Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
                 checkAllpermiss()
             }
             R.id.color_bg_destory -> {
                 if (VirtualKeyService.isRunning)
-                    VirtualKeyService.service.destoryFlowView()
+                    VirtualKeyService.service!!.destoryFlowView()
                 else
                     Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
                 checkAllpermiss()
@@ -119,14 +120,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.color_bg_commit ->
                 //设置灰色
                 if (VirtualKeyService.isRunning)
-                    VirtualKeyService.service.setBgGray()
+                    VirtualKeyService.service!!.setBgGray()
                 else
                     Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
 
             R.id.color_transparent ->
                 //设置透明
                 if (VirtualKeyService.isRunning)
-                    VirtualKeyService.service.setBgTran()
+                    VirtualKeyService.service!!.setBgTran()
                 else
                     Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
 
@@ -170,7 +171,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (Settings.canDrawOverlays(this)) {
                     if (VirtualKeyService.isRunning)
-                        VirtualKeyService.service.createFloatView()
+                        VirtualKeyService.service!!.createFloatView()
                     else
                         Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
                 } else {
@@ -200,7 +201,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             mAccessStatus!!.setText(R.string.yes)
 
 
-            if (VirtualKeyService.service.getmFloatView() == null) {
+            if (VirtualKeyService.service!!.getmFloatView() == null) {
                 mBackViewStatus!!.setText(R.string.no)
             } else {
                 mBackViewStatus!!.setText(R.string.yes)
@@ -227,8 +228,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             mAccessStatus!!.setText(R.string.no)
             if (VirtualKeyService.service != null)
-                if (VirtualKeyService.service.getmFloatView() != null)
-                    VirtualKeyService.service.destoryFlowView()
+                if (VirtualKeyService.service!!.getmFloatView() != null)
+                    VirtualKeyService.service!!.destoryFlowView()
         }
     }
 
