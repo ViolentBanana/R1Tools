@@ -9,4 +9,4 @@
 .externalNativeBuild
 /virtualkey
 /.idea/
-/app/release/
+libs/
