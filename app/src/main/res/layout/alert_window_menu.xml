@@ -9,6 +9,27 @@
         android:layout_width="20dp"
         android:layout_height="match_parent"
         android:background="#55000000"
+        android:visibility="gone"
+        android:contentDescription="@null" />
+
+
+    <TextView
+        android:id="@+id/alert_window_imagebtn_right"
+        android:layout_alignParentRight="true"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:background="#55000000"
+        android:visibility="gone"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:id="@+id/alert_window_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#55000000"
         android:contentDescription="@null" />
 
 </RelativeLayout>

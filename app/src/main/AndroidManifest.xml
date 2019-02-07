@@ -3,6 +3,9 @@
     package="com.chen.sumsungs8virtualkey">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+
 
     <application
         android:name=".app.App"

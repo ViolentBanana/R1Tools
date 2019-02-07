@@ -75,7 +75,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -83,51 +84,91 @@
                     android:paddingTop="10dp"
                     android:text="3.侧屏返回显示：" />
 
-                <TextView
-                    android:id="@+id/color_bg_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:gravity="center"
-                    android:text="否"
-                    android:visibility="visible" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
 
-                    <Button
-                        android:id="@+id/color_bg_create"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="显示返回条"
-                        android:visibility="visible" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <Button
-                        android:id="@+id/color_bg_destory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="关闭返回条"
-                        android:visibility="visible" />
+                        <TextView
+                            android:id="@+id/color_bg_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:text="否"
+                            android:visibility="visible" />
 
-                    <Button
-                        android:id="@+id/color_bg_commit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="设置灰色" />
+                        <Button
+                            android:id="@+id/color_bg_create"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="显示左侧返回条"
+                            android:visibility="visible" />
+                    </LinearLayout>
 
 
-                    <Button
-                        android:id="@+id/color_transparent"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/color_bg_right_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:text="否"
+                            android:visibility="visible" />
+
+                        <Button
+                            android:id="@+id/color_bg_create_right"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="显示右侧返回条"
+                            android:visibility="visible" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_marginLeft="23dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="设置透明" />
+                        android:orientation="vertical">
+
+
+
+
+                        <Button
+                            android:id="@+id/color_bg_destory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="关闭返回条"
+                            android:visibility="visible" />
+
+                        <Button
+                            android:id="@+id/color_bg_commit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="设置灰色" />
+
+
+                        <Button
+                            android:id="@+id/color_transparent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="设置透明" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -196,25 +237,26 @@
 
             <TextView
 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
                 android:layout_marginTop="20dp"
-                android:layout_gravity="right"
-                android:text="@string/ps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:layout_marginTop="10dp"
-                android:layout_gravity="right"
-                android:text="@string/chen_v1_0_0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:text="@string/ps" />
 
             <TextView
-                android:layout_marginTop="10dp"
-                android:layout_gravity="right"
-                android:layout_marginBottom="20dp"
-                android:text="@string/system_c92_gmail_com"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="10dp"
+                android:text="@string/chen_v1_0_0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/system_c92_gmail_com" />
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
