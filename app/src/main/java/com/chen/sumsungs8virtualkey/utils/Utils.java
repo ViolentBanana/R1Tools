@@ -1,14 +1,17 @@
 package com.chen.sumsungs8virtualkey.utils;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.provider.Settings.Global;
 import android.util.Log;
 
 import com.chen.sumsungs8virtualkey.R;
+import com.chen.sumsungs8virtualkey.app.App;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +28,12 @@ public class Utils {
 
     public static float dp2px(Resources resources, float dp) {
         final float scale = resources.getDisplayMetrics().density;
-        return  dp * scale + 0.5f;
+        return dp * scale + 0.5f;
+    }
+
+    public static void vibrator(Context context, int milliseconds) {
+        Vibrator vib = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+        vib.vibrate(milliseconds);
     }
 
     public static boolean clearBlackNav(@NotNull Context context) {
@@ -35,7 +43,7 @@ public class Utils {
         return Global.putString(context.getContentResolver(), "navigationbar_use_theme_default", defaultSharedPreferences.getString("navigationbar_use_theme_default", null)) | (Global.putString(context.getContentResolver(), "navigationbar_color", defaultSharedPreferences.getString("navigationbar_color", null)) | Global.putString(context.getContentResolver(), "navigationbar_current_color", defaultSharedPreferences.getString("navigationbar_current_color", null)));
     }
 
-    public static boolean  forceTouchWizNavEnabled(@NotNull Context context){
+    public static boolean forceTouchWizNavEnabled(@NotNull Context context) {
         Intrinsics.checkParameterIsNotNull(context, "context");
         return Settings.Global.putInt(context.getContentResolver(), "navigationbar_hide_bar_enabled", 1);
     }
@@ -58,10 +66,10 @@ public class Utils {
             String line = null;
             while ((line = dis.readLine()) != null) {
                 Log.d("result", line);
-                LogUtils.INSTANCE.e("result"+ line);
+                LogUtils.INSTANCE.e("result" + line);
                 result += line;
             }
-            LogUtils.INSTANCE.e("result"+ line);
+            LogUtils.INSTANCE.e("result" + line);
             p.waitFor();
         } catch (Exception e) {
             e.printStackTrace();

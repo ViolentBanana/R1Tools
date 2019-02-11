@@ -4,12 +4,14 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.app.Service
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Message
+import android.os.Vibrator
 import android.provider.Settings
 import android.support.annotation.RequiresApi
 import android.util.Log
@@ -26,11 +28,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.chen.sumsungs8virtualkey.R
 import com.chen.sumsungs8virtualkey.app.App
-import com.chen.sumsungs8virtualkey.utils.IHandleMessage
-
-import com.chen.sumsungs8virtualkey.utils.LogUtils
-import com.chen.sumsungs8virtualkey.utils.Utils
-import com.chen.sumsungs8virtualkey.utils.WeakRefHandler
+import com.chen.sumsungs8virtualkey.utils.*
 
 class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
@@ -124,7 +122,6 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
                     .show()
         }
     }
-
 
 
     fun setBgGray() {
@@ -348,7 +345,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             mWindowManager!!.removeView(mFloatLayout)
             mFloatLayout = null
             mFloatView = null
-            mWindowManager= null
+            mWindowManager = null
         }
 
         if (mFloatLayoutRight != null) {
@@ -585,6 +582,9 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
     fun clickBackKey(): Boolean {
         try {
+            if (SharedPreferencesHelper.INSTANCE.getBoolean(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR)) {
+                Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 1))
+            }
             return performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -595,6 +595,9 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
     fun clickRecentKey(): Boolean {
         try {
+            if (SharedPreferencesHelper.INSTANCE.getBoolean(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR)) {
+                Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 1))
+            }
             return performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
         } catch (e: Exception) {
             return false
@@ -604,6 +607,9 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
     fun clickHomeKey(): Boolean {
         try {
+            if (SharedPreferencesHelper.INSTANCE.getBoolean(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR)) {
+                Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 1))
+            }
             return performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
         } catch (e: Exception) {
             return false

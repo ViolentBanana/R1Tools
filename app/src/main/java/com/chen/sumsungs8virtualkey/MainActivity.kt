@@ -1,17 +1,12 @@
 package com.chen.sumsungs8virtualkey
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
+import android.app.Dialog
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import com.chen.sumsungs8virtualkey.service.VirtualKeyService
 
 import com.chen.sumsungs8virtualkey.utils.CUtils
@@ -20,42 +15,44 @@ import android.graphics.PixelFormat
 import android.support.v4.content.ContextCompat.startActivity
 import android.view.LayoutInflater
 import android.view.WindowManager
-import android.widget.RelativeLayout
 import org.jetbrains.annotations.NotNull
 import kotlin.jvm.internal.Intrinsics
 import android.app.UiModeManager
-import android.content.SharedPreferences
+import android.content.*
 import android.graphics.Color
 import kotlin.TypeCastException
 import android.os.Build.VERSION
 import android.preference.PreferenceManager
+import android.support.v7.app.AlertDialog
+import android.widget.*
+import com.chen.sumsungs8virtualkey.utils.SharedPreferencesHelper
 import com.chen.sumsungs8virtualkey.utils.Utils
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    private var mAccessStatus: TextView? = null
-    private var mAccessBtn: Button? = null
+    private var access_status: TextView? = null
+    private var access_open: Button? = null
 
-    private var mNotificationStatus: TextView? = null
-    private var mNotificationBtn: Button? = null
+    private var notification_status: TextView? = null
+    private var notification_btn: Button? = null
 
-    private var mWindowsStatus: TextView? = null
-    private var mWindowsBtn: Button? = null
+    private var window_open_status: TextView? = null
 
-    private var mAutoStartStatus: TextView? = null
-    private var mAutoStartBtn: Button? = null
-
-
-    private var mBgColorCommit: TextView? = null
-    private var mColor_transparent: TextView? = null
-    private var mBackViewStatus: TextView? = null
-    private var mBackRightViewStatus: TextView? = null
+    private var auto_start_status: TextView? = null
+    private var auto_start_btn: Button? = null
 
 
-    private var mBackViewCreate: Button? = null
-    private var mBackViewRightCreate: Button? = null
-    private var mBackViewDestory: Button? = null
+    private var color_bg_commit: TextView? = null
+    private var color_transparent: TextView? = null
+    private var color_bg_status: TextView? = null
+    private var color_bg_right_status: TextView? = null
+
+
+    private var color_bg_create: Button? = null
+    private var color_bg_create_right: Button? = null
+    private var color_bg_destory: Button? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,42 +73,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun initView() {
 
 
-        mWindowsBtn = findViewById(R.id.window_open)
-        mWindowsBtn!!.setOnClickListener(this)
-        mWindowsStatus = findViewById(R.id.window_open_status)
+        window_open.setOnClickListener(this)
+        notification_btn!!.setOnClickListener(this)
 
-        mNotificationBtn = findViewById(R.id.notification_btn)
-        mNotificationBtn!!.setOnClickListener(this)
-        mNotificationStatus = findViewById(R.id.notification_status)
-
-        mAccessBtn = findViewById(R.id.access_open)
-        mAccessBtn!!.setOnClickListener(this)
-        mAccessStatus = findViewById(R.id.access_status)
+        access_open!!.setOnClickListener(this)
 
 
-        mAutoStartBtn = findViewById(R.id.auto_start_btn)
-        mAutoStartBtn!!.setOnClickListener(this)
-        mAutoStartStatus = findViewById(R.id.auto_start_status)
+        auto_start_btn!!.setOnClickListener(this)
 
-        mBgColorCommit = findViewById(R.id.color_bg_commit)
-        mBgColorCommit!!.setOnClickListener(this)
+        color_bg_commit!!.setOnClickListener(this)
 
-        mColor_transparent = findViewById(R.id.color_transparent)
-        mColor_transparent!!.setOnClickListener(this)
+        color_transparent!!.setOnClickListener(this)
 
-        mBackViewStatus = findViewById(R.id.color_bg_status)
-        mBackRightViewStatus = findViewById(R.id.color_bg_right_status)
+        color_bg_create!!.setOnClickListener(this)
 
+        color_bg_create_right!!.setOnClickListener(this)
 
-        mBackViewCreate = findViewById(R.id.color_bg_create)
-        mBackViewCreate!!.setOnClickListener(this)
+        color_bg_destory!!.setOnClickListener(this)
 
-        mBackViewRightCreate = findViewById(R.id.color_bg_create_right)
-        mBackViewRightCreate!!.setOnClickListener(this)
-
-        mBackViewDestory = findViewById(R.id.color_bg_destory)
-        mBackViewDestory!!.setOnClickListener(this)
-
+        setting_vibrator.setOnClickListener(this)
 
 //        LogUtils.e("getNavBarHeight:" + forceTouchWizNavEnabled(applicationContext))
 //        LogUtils.e("getNavBarHeight:" + getNavBarHeight(applicationContext))
@@ -119,20 +99,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        forceNavBlack(applicationContext)
 //        Utils.clearBlackNav(applicationContext)
 //        Utils.execRootCmd("wm overscan 0,0,0,0")
-    }
-
-
-    fun forceNavBlack(context: Context) {
-        Intrinsics.checkParameterIsNotNull(context, "context");
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putString("navigationbar_color",
-                Settings.Global.getString(context.getContentResolver(), "navigationbar_color")).putString("navigationbar_current_color",
-                Settings.Global.getString(context.getContentResolver(), "navigationbar_current_color")).putString("navigationbar_use_theme_default",
-                Settings.Global.getString(context.getContentResolver(),
-                        "navigationbar_use_theme_default")).apply();
-        val argb: Int = Color.argb(255, 0, 0, 0);
-        Settings.Global.putInt(context.getContentResolver(), "navigationbar_color", argb);
-        Settings.Global.putInt(context.getContentResolver(), "navigationbar_current_color", argb);
-        Settings.Global.putInt(context.getContentResolver(), "navigationbar_use_theme_default", 0);
     }
 
 
@@ -204,9 +170,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.auto_start_btn ->
                 //自动启动
                 openAppDetail()
+
+            R.id.setting_vibrator -> {
+                setVibratorStrength()
+
+            }
+
         }
     }
 
+
+    fun setVibratorStrength() {
+        var et = EditText(this);
+        AlertDialog.Builder(this).setTitle("请输入消息")
+                .setIcon(android.R.drawable.sym_def_app_icon)
+                .setView(et)
+                .setPositiveButton("确定") { dialog, which ->
+                    Toast.makeText(getApplicationContext(), et.getText().toString(), Toast.LENGTH_LONG).show();
+                }.setNegativeButton("取消", null).show();
+    }
 
     fun forceTouchWizNavEnabled(context: Context): Boolean {
         Intrinsics.checkParameterIsNotNull(context, "context");
@@ -281,32 +263,32 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         //辅助功能
         if (VirtualKeyService.isRunning) {
-            mAccessStatus!!.setText(R.string.yes)
+            access_status!!.setText(R.string.yes)
 
             if (VirtualKeyService.service!!.getmFloatView() == null) {
-                mBackViewStatus!!.setText(R.string.no)
+                color_bg_status!!.setText(R.string.no)
             } else {
-                mBackViewStatus!!.setText(R.string.yes)
+                color_bg_status!!.setText(R.string.yes)
             }
 
 
             if (VirtualKeyService.service!!.getmFloatViewRight() == null) {
-                mBackRightViewStatus!!.setText(R.string.no)
+                color_bg_right_status!!.setText(R.string.no)
             } else {
-                mBackRightViewStatus!!.setText(R.string.yes)
+                color_bg_right_status!!.setText(R.string.yes)
             }
 
 
             //通知权限
             if (CUtils.isEnabled(applicationContext)) {
-                mNotificationStatus!!.setText(R.string.yes)
+                notification_status!!.setText(R.string.yes)
             } else {
-                mNotificationStatus!!.setText(R.string.no)
+                notification_status!!.setText(R.string.no)
             }
 
 
         } else {
-            mAccessStatus!!.setText(R.string.no)
+            access_status!!.setText(R.string.no)
             if (VirtualKeyService.service != null)
                 if (VirtualKeyService.service!!.getmFloatView() != null)
                     VirtualKeyService.service!!.destoryFlowView()
@@ -316,13 +298,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //窗口显示权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (Settings.canDrawOverlays(applicationContext)) {
-                mWindowsStatus!!.setText(R.string.yes)
+                window_open_status!!.setText(R.string.yes)
             } else {
-                mWindowsStatus!!.setText(R.string.no)
+                window_open_status!!.setText(R.string.no)
             }
         } else {
-            mWindowsStatus!!.setText(R.string.yes)
+            window_open_status!!.setText(R.string.yes)
         }
+
+
+        auto_start_vibrator.text = SharedPreferencesHelper.INSTANCE.getInt(this, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0).toString()
+
     }
 
     /**
