@@ -582,9 +582,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
     fun clickBackKey(): Boolean {
         try {
-            if (SharedPreferencesHelper.INSTANCE.getBoolean(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR)) {
-                Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 1))
-            }
+            Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0))
             return performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -595,9 +593,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
     fun clickRecentKey(): Boolean {
         try {
-            if (SharedPreferencesHelper.INSTANCE.getBoolean(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR)) {
-                Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 1))
-            }
+            Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0))
             return performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
         } catch (e: Exception) {
             return false
@@ -607,9 +603,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
     fun clickHomeKey(): Boolean {
         try {
-            if (SharedPreferencesHelper.INSTANCE.getBoolean(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR)) {
-                Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 1))
-            }
+            Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0))
             return performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
         } catch (e: Exception) {
             return false

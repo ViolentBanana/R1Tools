@@ -24,35 +24,15 @@ import kotlin.TypeCastException
 import android.os.Build.VERSION
 import android.preference.PreferenceManager
 import android.support.v7.app.AlertDialog
+import android.text.InputType
 import android.widget.*
 import com.chen.sumsungs8virtualkey.utils.SharedPreferencesHelper
 import com.chen.sumsungs8virtualkey.utils.Utils
 import kotlinx.android.synthetic.main.activity_main.*
+import android.text.InputFilter
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
-
-    private var access_status: TextView? = null
-    private var access_open: Button? = null
-
-    private var notification_status: TextView? = null
-    private var notification_btn: Button? = null
-
-    private var window_open_status: TextView? = null
-
-    private var auto_start_status: TextView? = null
-    private var auto_start_btn: Button? = null
-
-
-    private var color_bg_commit: TextView? = null
-    private var color_transparent: TextView? = null
-    private var color_bg_status: TextView? = null
-    private var color_bg_right_status: TextView? = null
-
-
-    private var color_bg_create: Button? = null
-    private var color_bg_create_right: Button? = null
-    private var color_bg_destory: Button? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +57,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         notification_btn!!.setOnClickListener(this)
 
         access_open!!.setOnClickListener(this)
-
 
         auto_start_btn!!.setOnClickListener(this)
 
@@ -173,38 +152,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.setting_vibrator -> {
                 setVibratorStrength()
-
             }
-
         }
     }
 
 
     fun setVibratorStrength() {
-        var et = EditText(this);
-        AlertDialog.Builder(this).setTitle("请输入消息")
+        val et = EditText(this)
+
+        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        et.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(1))
+
+        AlertDialog.Builder(this).setTitle("请输入0-9的震动强度")
                 .setIcon(android.R.drawable.sym_def_app_icon)
                 .setView(et)
                 .setPositiveButton("确定") { dialog, which ->
-                    Toast.makeText(getApplicationContext(), et.getText().toString(), Toast.LENGTH_LONG).show();
-                }.setNegativeButton("取消", null).show();
-    }
 
-    fun forceTouchWizNavEnabled(context: Context): Boolean {
-        Intrinsics.checkParameterIsNotNull(context, "context");
-        return Settings.Global.putInt(context.getContentResolver(), "navigationbar_hide_bar_enabled", 1);
-    }
+                    SharedPreferencesHelper.INSTANCE.putInt(getApplicationContext(), SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, et.text.toString().toInt())
+                    checkAllpermiss()
 
-    fun getNavBarHeight(context: Context): Int {
-        Intrinsics.checkParameterIsNotNull(context, "context");
-        var systemService: UiModeManager = context!!.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-        if (systemService == null) {
-            throw  TypeCastException("null cannot be cast to non-null type android.app.UiModeManager");
-        } else if ((systemService)!!.getCurrentModeType() == 3) {
-            return context.getResources().getDimensionPixelSize(context.getResources().getIdentifier("navigation_bar_height_car_mode", "dimen", "android"));
-        } else {
-            return context.getResources().getDimensionPixelSize(context.getResources().getIdentifier("navigation_bar_height", "dimen", "android"));
-        }
+                }.setNegativeButton("取消", null).show()
     }
 
     /**
@@ -307,7 +275,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
 
 
-        auto_start_vibrator.text = SharedPreferencesHelper.INSTANCE.getInt(this, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0).toString()
+        val st = SharedPreferencesHelper.INSTANCE.getInt(this, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0)
+        if (st == 0) {
+            auto_start_vibrator.text = "无震动"
+        } else {
+            auto_start_vibrator.text = st.toString()
+        }
 
     }
 
