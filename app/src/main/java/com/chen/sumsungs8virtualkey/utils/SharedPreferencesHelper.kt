@@ -14,6 +14,8 @@ enum class SharedPreferencesHelper {
     val VIBRATOR = "VIBRATOR"
     //震动强度
     val VIBRATOR_STRENGTH = "VIBRATOR_STRENGTH"
+    val LEFT_WIDTH = "LEFT_WIDTH"
+    val RIGHT_WIDTH = "RIGHT_WIDTH"
 
 
     val NAME = "config"

@@ -185,7 +185,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             wmParams!!.y = 0
 
             //设置悬浮窗口长宽数据
-            wmParams!!.width = Utils.dp2px(resources, 10f).toInt()
+            wmParams!!.width = getLeftWidth()
             wmParams!!.height = WindowManager.LayoutParams.MATCH_PARENT
 
             val inflater = LayoutInflater.from(this)
@@ -245,8 +245,10 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             wmParamsRight!!.y = 0
 
             //设置悬浮窗口长宽数据
-            wmParamsRight!!.width = Utils.dp2px(resources, 10f).toInt()
+//            wmParamsRight!!.width = Utils.dp2px(resources, 10f).toInt()
+            wmParamsRight!!.width = getRightWidth()
             wmParamsRight!!.height = WindowManager.LayoutParams.MATCH_PARENT
+//            wmParamsRight!!.height = 100
 
             val inflater = LayoutInflater.from(this)
             //获取浮动窗口视图所在布局
@@ -579,6 +581,15 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
         }
     }
 
+
+    fun getLeftWidth():Int{
+        return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.LEFT_WIDTH, 30)
+    }
+
+
+    fun getRightWidth():Int{
+        return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, 30)
+    }
 
     fun clickBackKey(): Boolean {
         try {

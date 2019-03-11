@@ -72,6 +72,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         setting_vibrator.setOnClickListener(this)
 
+
+        color_bg_create_right_width.setOnClickListener(this)
+        color_bg_create_width.setOnClickListener(this)
+
 //        LogUtils.e("getNavBarHeight:" + forceTouchWizNavEnabled(applicationContext))
 //        LogUtils.e("getNavBarHeight:" + getNavBarHeight(applicationContext))
 
@@ -153,7 +157,66 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.setting_vibrator -> {
                 setVibratorStrength()
             }
+
+
+            R.id.color_bg_create_right_width -> {
+                setRightWidth()
+            }
+
+
+            R.id.color_bg_create_width -> {
+                setLeftWidth()
+            }
         }
+    }
+
+    fun setLeftWidth() {
+        val et = EditText(this)
+
+        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        AlertDialog.Builder(this).setTitle("请输入左侧返回条宽度默认30")
+                .setIcon(android.R.drawable.sym_def_app_icon)
+                .setView(et)
+                .setPositiveButton("确定") { dialog, which ->
+
+                    SharedPreferencesHelper.INSTANCE.putInt(getApplicationContext(), SharedPreferencesHelper.INSTANCE.LEFT_WIDTH, et.text.toString().toInt())
+                    reCreateView()
+
+                }.setNegativeButton("取消", null).show()
+    }
+
+    fun setRightWidth() {
+        val et = EditText(this)
+
+        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        AlertDialog.Builder(this).setTitle("请输入右侧返回条宽度默认30")
+                .setIcon(android.R.drawable.sym_def_app_icon)
+                .setView(et)
+                .setPositiveButton("确定") { dialog, which ->
+
+                    SharedPreferencesHelper.INSTANCE.putInt(getApplicationContext(), SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, et.text.toString().toInt())
+                    reCreateView()
+
+                }.setNegativeButton("取消", null).show()
+    }
+
+
+    fun reCreateView() {
+
+
+        if (VirtualKeyService.isRunning)
+            VirtualKeyService.service!!.destoryFlowView()
+        else
+            Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
+        if (VirtualKeyService.isRunning) {
+            VirtualKeyService.service!!.createView()
+
+            VirtualKeyService.service!!.createRightFloatView()
+        } else
+            Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
+        checkAllpermiss()
     }
 
 
