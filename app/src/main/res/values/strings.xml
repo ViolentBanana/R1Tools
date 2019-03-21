@@ -22,4 +22,9 @@
     <string name="system_c92_gmail_com">如有问题可咨询邮箱:9853318@qq.com</string>
     <string name="please_try_again">请重新开启辅助功能后尝试</string>
 
+    <string name="gesture_fragment_title">手势设置</string>
+    <string name="introduce_fragment_title">功能简介</string>
+    <string name="test_fragment_title">试验功能</string>
+
+
 </resources>

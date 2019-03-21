@@ -32,8 +32,14 @@ public class Utils {
     }
 
     public static void vibrator(Context context, int milliseconds) {
-        Vibrator vib = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
-        vib.vibrate(milliseconds);
+        if (milliseconds > 0) {
+
+            Vibrator vib = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+            if (vib != null) {
+                vib.vibrate(milliseconds);
+            }
+
+        }
     }
 
     public static boolean clearBlackNav(@NotNull Context context) {

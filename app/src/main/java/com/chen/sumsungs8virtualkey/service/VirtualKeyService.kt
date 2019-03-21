@@ -205,7 +205,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
                     //设置监听浮动窗口的触摸移动
                     mFloatView!!.setOnTouchListener(onClick())
-                    mFloatView!!.setOnClickListener { }
+
                 } else {
                     Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
                             .LENGTH_SHORT).show()
@@ -267,7 +267,6 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
                     //设置监听浮动窗口的触摸移动
                     mFloatViewRight!!.setOnTouchListener(onClick())
-                    mFloatViewRight!!.setOnClickListener { }
                 } else {
                     Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
                             .LENGTH_SHORT).show()
@@ -609,7 +608,6 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
         } catch (e: Exception) {
             return false
         }
-
     }
 
     fun clickHomeKey(): Boolean {

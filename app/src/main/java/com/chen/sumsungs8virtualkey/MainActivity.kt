@@ -1,263 +1,134 @@
 package com.chen.sumsungs8virtualkey
 
-import android.app.Dialog
-import android.net.Uri
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.support.design.widget.NavigationView
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentStatePagerAdapter
+import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.View
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import com.chen.sumsungs8virtualkey.base.BaseFragment
+import com.chen.sumsungs8virtualkey.gesture.GestureFragment
+import com.chen.sumsungs8virtualkey.introduce.IntroduceFragment
 import com.chen.sumsungs8virtualkey.service.VirtualKeyService
-
-import com.chen.sumsungs8virtualkey.utils.CUtils
-import com.chen.sumsungs8virtualkey.utils.LogUtils
-import android.graphics.PixelFormat
-import android.support.v4.content.ContextCompat.startActivity
-import android.view.LayoutInflater
-import android.view.WindowManager
-import org.jetbrains.annotations.NotNull
-import kotlin.jvm.internal.Intrinsics
-import android.app.UiModeManager
-import android.content.*
-import android.graphics.Color
-import kotlin.TypeCastException
-import android.os.Build.VERSION
-import android.preference.PreferenceManager
-import android.support.v7.app.AlertDialog
-import android.text.InputType
-import android.widget.*
-import com.chen.sumsungs8virtualkey.utils.SharedPreferencesHelper
-import com.chen.sumsungs8virtualkey.utils.Utils
+import com.chen.sumsungs8virtualkey.test.TestFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import android.text.InputFilter
+import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.navigation_content.*
+import java.util.*
+import android.view.SubMenu
 
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+const val REQUEST_OVERLAY = 100
+
+
+class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initView()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(applicationContext)) {
-                //启动Activity让用户授权
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                intent.data = Uri.parse("package:$packageName")
-                startActivityForResult(intent, 100)
-            }
+        initToolBar()
+
+        initActionBar()
+
+        initNavigationView()
+
+        initTabView()
+
+    }
+
+    private fun initNavigationView() {
+        if (nv_main_navigation != null) {
+            setupDrawerContent(nv_main_navigation)
+
+            val menu = nv_main_navigation.menu
+
+            val topChannelMenu = menu.addSubMenu("关于")
+            topChannelMenu.add("版本：v" + BuildConfig.VERSION_NAME)
+            topChannelMenu.add("时间：" + BuildConfig.BUILD_TIME)
         }
     }
 
-    private fun initView() {
+    private fun initActionBar() {
+        val ab = supportActionBar
+        ab!!.setHomeAsUpIndicator(R.drawable.ic_menu)
+        ab.setDisplayHomeAsUpEnabled(true)
 
-
-        window_open.setOnClickListener(this)
-        notification_btn!!.setOnClickListener(this)
-
-        access_open!!.setOnClickListener(this)
-
-        auto_start_btn!!.setOnClickListener(this)
-
-        color_bg_commit!!.setOnClickListener(this)
-
-        color_transparent!!.setOnClickListener(this)
-
-        color_bg_create!!.setOnClickListener(this)
-
-        color_bg_create_right!!.setOnClickListener(this)
-
-        color_bg_destory!!.setOnClickListener(this)
-
-        setting_vibrator.setOnClickListener(this)
-
-
-        color_bg_create_right_width.setOnClickListener(this)
-        color_bg_create_width.setOnClickListener(this)
-
-//        LogUtils.e("getNavBarHeight:" + forceTouchWizNavEnabled(applicationContext))
-//        LogUtils.e("getNavBarHeight:" + getNavBarHeight(applicationContext))
-
-//        forceNavBlack(applicationContext)
-//        Utils.clearBlackNav(applicationContext)
-//        Utils.execRootCmd("wm overscan 0,0,0,0")
     }
 
-
-    fun openAppDetail() {
-        val intent = Intent("android.settings.APPLICATION_DETAILS_SETTINGS")
-        val pkg = "com.android.settings"
-        val cls = "com.android.settings.applications.InstalledAppDetails"
-        intent.component = ComponentName(pkg, cls)
-        intent.data = Uri.parse("package:$packageName")
-        startActivity(intent)
-    }
-
-    override fun onClick(v: View) {
-        when (v.id) {
-
-
-            R.id.window_open -> {
-                initPermission()
-                Toast.makeText(applicationContext, "打开窗口", Toast.LENGTH_SHORT).show()
-            }
-
-            R.id.access_open -> openAccessibilityServiceSettings()
-
-            R.id.color_bg_create -> {
-                if (VirtualKeyService.isRunning) {
-//                    VirtualKeyService.service!!.createFloatView()
-                    VirtualKeyService.service!!.createView()
-                } else
-                    Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
-                checkAllpermiss()
-            }
-            R.id.color_bg_create_right -> {
-                if (VirtualKeyService.isRunning) {
-//                    VirtualKeyService.service!!.createFloatView()
-                    VirtualKeyService.service!!.createRightFloatView()
-                } else
-                    Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
-                checkAllpermiss()
-            }
-            R.id.color_bg_destory -> {
-                if (VirtualKeyService.isRunning)
-                    VirtualKeyService.service!!.destoryFlowView()
-                else
-                    Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
-                checkAllpermiss()
-            }
-
-
-            R.id.color_bg_commit ->
-                //设置灰色
-                if (VirtualKeyService.isRunning)
-                    VirtualKeyService.service!!.setBgGray()
-                else
-                    Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
-
-            R.id.color_transparent ->
-                //设置透明
-                if (VirtualKeyService.isRunning)
-                    VirtualKeyService.service!!.setBgTran()
-                else
-                    Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
-
-
-            R.id.notification_btn ->
-                //获取通知权限
-                startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"))
-
-
-            R.id.auto_start_btn ->
-                //自动启动
-                openAppDetail()
-
-            R.id.setting_vibrator -> {
-                setVibratorStrength()
-            }
-
-
-            R.id.color_bg_create_right_width -> {
-                setRightWidth()
-            }
-
-
-            R.id.color_bg_create_width -> {
-                setLeftWidth()
-            }
+    private fun setupDrawerContent(navigationView: NavigationView) {
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            menuItem.isChecked = true
+            dl_main_drawer.closeDrawers()
+            true
         }
     }
 
-    fun setLeftWidth() {
-        val et = EditText(this)
 
-        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
-
-        AlertDialog.Builder(this).setTitle("请输入左侧返回条宽度默认30")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
-
-                    SharedPreferencesHelper.INSTANCE.putInt(getApplicationContext(), SharedPreferencesHelper.INSTANCE.LEFT_WIDTH, et.text.toString().toInt())
-                    reCreateView()
-
-                }.setNegativeButton("取消", null).show()
-    }
-
-    fun setRightWidth() {
-        val et = EditText(this)
-
-        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
-
-        AlertDialog.Builder(this).setTitle("请输入右侧返回条宽度默认30")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
-
-                    SharedPreferencesHelper.INSTANCE.putInt(getApplicationContext(), SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, et.text.toString().toInt())
-                    reCreateView()
-
-                }.setNegativeButton("取消", null).show()
+    private fun initToolBar() {
+        setSupportActionBar(toolbar)
     }
 
 
-    fun reCreateView() {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        menuInflater.inflate(R.menu.menu_overaction, menu)
+//        getMenuInflater().inflate(R.menu.drawer_view, menu);
 
-
-        if (VirtualKeyService.isRunning)
-            VirtualKeyService.service!!.destoryFlowView()
-        else
-            Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
-        if (VirtualKeyService.isRunning) {
-            VirtualKeyService.service!!.createView()
-
-            VirtualKeyService.service!!.createRightFloatView()
-        } else
-            Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
-        checkAllpermiss()
+        return true
     }
 
-
-    fun setVibratorStrength() {
-        val et = EditText(this)
-
-        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
-
-        et.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(1))
-
-        AlertDialog.Builder(this).setTitle("请输入0-9的震动强度")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
-
-                    SharedPreferencesHelper.INSTANCE.putInt(getApplicationContext(), SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, et.text.toString().toInt())
-                    checkAllpermiss()
-
-                }.setNegativeButton("取消", null).show()
-    }
-
-    /**
-     * 获取窗口显示权限
-     */
-    private fun initPermission() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(applicationContext)) {
-                //启动Activity让用户授权
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                intent.data = Uri.parse("package:$packageName")
-                startActivityForResult(intent, REQUEST_OVERLAY)
-            } else {
-                Toast.makeText(applicationContext, "已经获取浮窗权限", Toast.LENGTH_SHORT).show()
-                //                createFloatView();
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                dl_main_drawer.openDrawer(GravityCompat.START)
+                return true
             }
-        } else {
-            //            createFloatView();
-            Toast.makeText(applicationContext, "已经获取浮窗权限", Toast.LENGTH_SHORT).show()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    internal var mFrags: MutableList<BaseFragment> = ArrayList()
+
+
+    private fun initTabView() {
+
+        mFrags.add(GestureFragment.newInstance())
+        mFrags.add(TestFragment.newInstance())
+        mFrags.add(IntroduceFragment.newInstance())
+
+
+        vp_content.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
+            override fun getCount(): Int {
+                return mFrags.size
+
+            }
+
+            override fun getItem(position: Int): Fragment {
+                return mFrags[position]
+            }
+
+            override fun getPageTitle(position: Int): CharSequence {
+                return getString(mFrags[position].getTitleText())
+            }
 
         }
+
+        vp_content.offscreenPageLimit = mFrags.size
+        tl_tabs.setupWithViewPager(vp_content)
+
+
+        tl_tabs.setSelectedTabIndicatorColor(resources.getColor(R.color.tabIndicatorColor))
+        tl_tabs.setPadding(0, 0, 0, 5)
+//        tl_tabs.setTabsFromPagerAdapter(adapter)
+        tl_tabs.setTabTextColors(resources.getColor(R.color.tabTextColorUnselect), resources.getColor(R.color.tabTextColorSelect))
+
     }
 
 
@@ -277,94 +148,5 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
         }
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        checkAllpermiss()
-
-        LogUtils.e("是否运行中：" + VirtualKeyService.isRunning)
-
-
-    }
-
-
-    fun checkAllpermiss() {
-
-        //辅助功能
-        if (VirtualKeyService.isRunning) {
-            access_status!!.setText(R.string.yes)
-
-            if (VirtualKeyService.service!!.getmFloatView() == null) {
-                color_bg_status!!.setText(R.string.no)
-            } else {
-                color_bg_status!!.setText(R.string.yes)
-            }
-
-
-            if (VirtualKeyService.service!!.getmFloatViewRight() == null) {
-                color_bg_right_status!!.setText(R.string.no)
-            } else {
-                color_bg_right_status!!.setText(R.string.yes)
-            }
-
-
-            //通知权限
-            if (CUtils.isEnabled(applicationContext)) {
-                notification_status!!.setText(R.string.yes)
-            } else {
-                notification_status!!.setText(R.string.no)
-            }
-
-
-        } else {
-            access_status!!.setText(R.string.no)
-            if (VirtualKeyService.service != null)
-                if (VirtualKeyService.service!!.getmFloatView() != null)
-                    VirtualKeyService.service!!.destoryFlowView()
-        }
-
-
-        //窗口显示权限
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Settings.canDrawOverlays(applicationContext)) {
-                window_open_status!!.setText(R.string.yes)
-            } else {
-                window_open_status!!.setText(R.string.no)
-            }
-        } else {
-            window_open_status!!.setText(R.string.yes)
-        }
-
-
-        val st = SharedPreferencesHelper.INSTANCE.getInt(this, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0)
-        if (st == 0) {
-            auto_start_vibrator.text = "无震动"
-        } else {
-            auto_start_vibrator.text = st.toString()
-        }
-
-    }
-
-    /**
-     * 打开辅助服务的设置
-     */
-    private fun openAccessibilityServiceSettings() {
-        try {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            startActivity(intent)
-            Toast.makeText(this, "请开启r1手势返回服务", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-    }
-
-    companion object {
-
-        val REQUEST_OVERLAY = 100
-
-        private val TAG = "MainActivityTouch"
     }
 }

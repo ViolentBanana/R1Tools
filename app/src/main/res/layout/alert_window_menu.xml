@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:background="#55000000"
         android:visibility="gone"
+        android:clickable="true"
         android:contentDescription="@null" />
 
 
@@ -20,6 +21,7 @@
         android:layout_height="match_parent"
         android:background="#55000000"
         android:visibility="gone"
+        android:clickable="true"
         android:contentDescription="@null" />
 
     <TextView

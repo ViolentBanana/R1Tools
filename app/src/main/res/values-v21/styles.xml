@@ -1,17 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Base application theme. -->
+    <!--<style name="AppTheme" parent="android:Theme.Material.Light">-->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
 
     </style>
 
     <style name="Theme.MusicSpoon" parent="Base.Theme.MusicSpoon">
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
     </style>
 
 
     <style name="Base.Theme.MusicSpoon" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/window_background</item>
