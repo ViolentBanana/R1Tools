@@ -1,13 +1,26 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.chen.sumsungs8virtualkey.test.TestFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/test_fragment_title" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tips"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:text="敬请期待!"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/test_fragment_tips"
+        android:textColor="@color/black" />
+
+</RelativeLayout>

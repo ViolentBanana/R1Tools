@@ -1,16 +1,22 @@
 package com.chen.sumsungs8virtualkey
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.NavigationView
+import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import com.chen.sumsungs8virtualkey.base.BaseFragment
 import com.chen.sumsungs8virtualkey.gesture.GestureFragment
@@ -18,10 +24,8 @@ import com.chen.sumsungs8virtualkey.introduce.IntroduceFragment
 import com.chen.sumsungs8virtualkey.service.VirtualKeyService
 import com.chen.sumsungs8virtualkey.test.TestFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.navigation_content.*
 import java.util.*
-import android.view.SubMenu
 
 
 const val REQUEST_OVERLAY = 100
@@ -103,7 +107,6 @@ class MainActivity : AppCompatActivity() {
         mFrags.add(TestFragment.newInstance())
         mFrags.add(IntroduceFragment.newInstance())
 
-
         vp_content.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getCount(): Int {
                 return mFrags.size
@@ -122,15 +125,98 @@ class MainActivity : AppCompatActivity() {
 
         vp_content.offscreenPageLimit = mFrags.size
         tl_tabs.setupWithViewPager(vp_content)
-
-
+        for (i in 0 until mFrags.size) {
+            tl_tabs.getTabAt(i)!!.
+                    setCustomView(
+                            getTabView(i))
+        }
         tl_tabs.setSelectedTabIndicatorColor(resources.getColor(R.color.tabIndicatorColor))
         tl_tabs.setPadding(0, 0, 0, 5)
 //        tl_tabs.setTabsFromPagerAdapter(adapter)
-        tl_tabs.setTabTextColors(resources.getColor(R.color.tabTextColorUnselect), resources.getColor(R.color.tabTextColorSelect))
+        tl_tabs.setTabTextColors(resources.getColor(R.color.tabTextColorSelect), resources.getColor(R.color.tabTextColorSelect))
 
+        tl_tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                changeTabNormal(tab)   //Tab失去焦点
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                changeTabSelect(tab)   //Tab获取焦点
+            }
+        })
     }
 
+    private fun getTabView(index: Int): LinearLayout {
+        //自定义View布局
+        val view = LayoutInflater.from(applicationContext).inflate(R.layout.item_rank_tab, null) as LinearLayout
+        val title = view.findViewById(R.id.tab_title) as TextView
+//        val iv = view.findViewById(R.id.iv) as ImageView
+        title.setText(getString(mFrags[index].getTitleText()))
+        if (index != 0) {
+            view.setAlpha(0.5f)
+            title.setTextColor(resources.getColor(R.color.tabTextColorUnselect))
+
+//            if (index == 0) {
+//                iv.setImageResource(R.drawable.rank_01)
+//            } else {
+//                iv.setImageResource(R.drawable.rank_03)
+//            }
+        } else {
+//            iv.setImageResource(R.drawable.rank_02)
+            view.setScaleX(1.1f)
+            view.setScaleY(1.1f)
+            title.setTextColor(resources.getColor(R.color.tabTextColorSelect))
+        }
+        return view
+    }
+
+    /**
+     * 改变TabLayout的View到选中状态
+     * 使用属性动画改编Tab中View的状态
+     */
+    private fun changeTabSelect(tab: TabLayout.Tab?) {
+
+        if (tab != null) {
+            val view = tab.customView as LinearLayout
+            val text = view.getChildAt(0) as TextView
+            text.setTextColor(resources.getColor(R.color.tabTextColorSelect))
+            val anim = ObjectAnimator
+                    .ofFloat(view as View, "", 1.0f, 1.1f)
+                    .setDuration(200)
+            anim.start()
+            anim.addUpdateListener { animation ->
+                val cVal = animation.animatedValue as Float
+                view!!.alpha = 0.5f + (cVal - 1f) * (0.5f / 0.1f)
+                view.scaleX = cVal
+                view.scaleY = cVal
+            }
+        }
+    }
+
+    /**
+     * 改变TabLayout的View到未选中状态
+     */
+    private fun changeTabNormal(tab: TabLayout.Tab?) {
+        if (tab != null) {
+//            val view = tab.customView
+            val view = tab.customView as LinearLayout
+            val text = view.getChildAt(0) as TextView
+            text.setTextColor(resources.getColor(R.color.tabTextColorSelect))
+            val anim = ObjectAnimator
+                    .ofFloat(view, "", 1.0f, 0.9f)
+                    .setDuration(200)
+            anim.start()
+            anim.addUpdateListener { animation ->
+                val cVal = animation.animatedValue as Float
+                view!!.alpha = 1f - (1f - cVal) * (0.5f / 0.1f)
+                view.scaleX = cVal
+                view.scaleY = cVal
+            }
+        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

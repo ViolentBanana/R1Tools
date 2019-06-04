@@ -9,8 +9,8 @@ android {
         applicationId "com.chen.nutpro2"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 4
-        versionName "1.0.3"
+        versionCode 5
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
 
@@ -34,7 +34,7 @@ android {
 
 String getDate() {
     Date date = new Date();
-    return String.format(date.format("yyyy年MM月dd", TimeZone.getTimeZone("UTC")).toString());
+    return String.format(date.format("yyyy年MM月dd日", TimeZone.getTimeZone("UTC")).toString());
 }
 
 dependencies {

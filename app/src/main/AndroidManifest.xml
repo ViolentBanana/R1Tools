@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".app.App"
@@ -40,7 +41,12 @@
                 android:resource="@xml/ai_config" />
         </service>
 
-
+        <receiver android:name=".receiver.BootCompletedReceiver" >
+            <intent-filter>
+                <!-- 开机广播 -->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
         <service
             android:name=".service.NotificationMonitorService"
             android:label="@string/notification_description"

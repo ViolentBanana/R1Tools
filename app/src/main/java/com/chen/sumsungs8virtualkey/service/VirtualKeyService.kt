@@ -4,16 +4,12 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Service
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Message
-import android.os.Vibrator
 import android.provider.Settings
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -22,13 +18,16 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import com.chen.sumsungs8virtualkey.BuildConfig
 import com.chen.sumsungs8virtualkey.R
+import com.chen.sumsungs8virtualkey.acessbility.AccessbilityJob
 import com.chen.sumsungs8virtualkey.app.App
 import com.chen.sumsungs8virtualkey.utils.*
+import java.util.ArrayList
 
 class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
@@ -68,6 +67,56 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
     private var mHander: WeakRefHandler<*>? = null
 
+
+    //检测包名
+    private val PACKAGES = arrayOf("com.tencent.mm", "com.qc.grabmoney", "com.android.packageinstaller", "com.lenovo.security", "com.samsung.android.packageinstaller", "com.miui.securitycenter")
+    //回调处理不同的辅助功能类
+    private val ACCESSBILITY_JOBS = arrayOf<Class<*>>()//            LenovoPhoneAccessibility.class, AutoAttentWechatAccessbility.class,
+    // XiaomiAccessibility.class
+    private var mAccessbilityJobs: ArrayList<AccessbilityJob> = ArrayList()
+
+    override fun onCreate() {
+        super.onCreate()
+        init()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LogUtils.d("grabmoney service destory")
+        if (!mAccessbilityJobs.isEmpty()) {
+            for (job in mAccessbilityJobs) {
+                job.onStopJob()
+            }
+            mAccessbilityJobs.clear()
+        }
+        service = null
+        mAccessbilityJobs.clear()
+    }
+
+    private fun init() {
+
+        mAccessbilityJobs = ArrayList()
+
+        //初始化辅助插件工作
+        for (clazz in ACCESSBILITY_JOBS) {
+            try {
+                val `object` = clazz.newInstance()
+                if (`object` is AccessbilityJob) {
+                    `object`.onCreateJob(this)
+                    mAccessbilityJobs!!.add(`object`)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+
+        //        //初始化
+        //        mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        //        mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+
+    }
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         service = this
@@ -81,7 +130,49 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
 
-//        Log.i("VirtualKeyService", "shoudao")
+        if (BuildConfig.DEBUG) {
+            val eventType = event.eventType
+            var eventText = ""
+            LogUtils.i("==============Start====================")
+            when (eventType) {
+                AccessibilityEvent.TYPE_VIEW_CLICKED -> eventText = "TYPE_VIEW_CLICKED"
+                AccessibilityEvent.TYPE_VIEW_FOCUSED -> eventText = "TYPE_VIEW_FOCUSED"
+                AccessibilityEvent.TYPE_VIEW_LONG_CLICKED -> eventText = "TYPE_VIEW_LONG_CLICKED"
+                AccessibilityEvent.TYPE_VIEW_SELECTED -> eventText = "TYPE_VIEW_SELECTED"
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED -> eventText = "TYPE_VIEW_TEXT_CHANGED"
+                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> eventText = "TYPE_WINDOW_STATE_CHANGED"
+                AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED -> eventText = "TYPE_NOTIFICATION_STATE_CHANGED"
+                AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END -> eventText = "TYPE_TOUCH_EXPLORATION_GESTURE_END"
+                AccessibilityEvent.TYPE_ANNOUNCEMENT -> eventText = "TYPE_ANNOUNCEMENT"
+                AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START -> eventText = "TYPE_TOUCH_EXPLORATION_GESTURE_START"
+                AccessibilityEvent.TYPE_VIEW_HOVER_ENTER -> eventText = "TYPE_VIEW_HOVER_ENTER"
+                AccessibilityEvent.TYPE_VIEW_HOVER_EXIT -> eventText = "TYPE_VIEW_HOVER_EXIT"
+                AccessibilityEvent.TYPE_VIEW_SCROLLED -> eventText = "TYPE_VIEW_SCROLLED"
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED -> eventText = "TYPE_VIEW_TEXT_SELECTION_CHANGED"
+                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> eventText = "TYPE_WINDOW_CONTENT_CHANGED"
+            }
+            eventText = "$eventText:$eventType"
+            LogUtils.i(event.packageName.toString() + "")
+            LogUtils.i("界面名字:" + event.className)
+            //            LogUtils.e(event+"");
+            //            LogUtils.e(event.toString());
+            LogUtils.i(eventText)
+            LogUtils.i("=============END=====================")
+        }
+
+
+        val pkn = event.packageName.toString()
+
+        LogUtils.e("长度：" + mAccessbilityJobs!!.size)
+        if (mAccessbilityJobs != null && !mAccessbilityJobs!!.isEmpty()) {
+            for (job in mAccessbilityJobs!!) {
+                //                LogUtils.e("开始分发：" + job.isEnable() + "/" + pkn + "/" + job.getTargetPackageName());
+
+                if (pkn == job.getTargetPackageName() && job.isEnable()) {
+                    job.onReceiveJob(event)
+                }
+            }
+        }
 
     }
 
@@ -179,14 +270,15 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             wmParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
             //调整悬浮窗显示的停靠位置为左侧置顶
 //            wmParams!!.gravity = Gravity.LEFT or Gravity.TOP
-            wmParams!!.gravity = Gravity.LEFT
+            wmParams!!.gravity = Gravity.LEFT or Gravity.BOTTOM
             // 以屏幕左上角为原点，设置x、y初始值，相对于gravity
             wmParams!!.x = 0
             wmParams!!.y = 0
 
             //设置悬浮窗口长宽数据
             wmParams!!.width = getLeftWidth()
-            wmParams!!.height = WindowManager.LayoutParams.MATCH_PARENT
+            wmParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
+
 
             val inflater = LayoutInflater.from(this)
             //获取浮动窗口视图所在布局
@@ -199,9 +291,10 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
                     //浮动窗口按钮
                     mFloatView = mFloatLayout!!.findViewById(R.id.alert_window_imagebtn)
                     mFloatView!!.visibility = View.VISIBLE
-//                    mFloatLayout!!.measure(View.MeasureSpec.makeMeasureSpec(0,
-//                            View.MeasureSpec.UNSPECIFIED), View.MeasureSpec
-//                            .makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+                    val layp = mFloatView!!.layoutParams as RelativeLayout.LayoutParams
+                    layp.setMargins(0, getLeftMarginTopHeight(), 0, getLeftMarginBottomHeight())
+                    layp.height = RelativeLayout.LayoutParams.MATCH_PARENT
+                    layp.width = getLeftWidth()
 
                     //设置监听浮动窗口的触摸移动
                     mFloatView!!.setOnTouchListener(onClick())
@@ -247,8 +340,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             //设置悬浮窗口长宽数据
 //            wmParamsRight!!.width = Utils.dp2px(resources, 10f).toInt()
             wmParamsRight!!.width = getRightWidth()
-            wmParamsRight!!.height = WindowManager.LayoutParams.MATCH_PARENT
-//            wmParamsRight!!.height = 100
+            wmParamsRight!!.height = WindowManager.LayoutParams.WRAP_CONTENT
 
             val inflater = LayoutInflater.from(this)
             //获取浮动窗口视图所在布局
@@ -261,9 +353,13 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
                     //浮动窗口按钮
                     mFloatViewRight = mFloatLayoutRight!!.findViewById(R.id.alert_window_imagebtn_right)
                     mFloatViewRight!!.visibility = View.VISIBLE
-//                    mFloatLayout!!.measure(View.MeasureSpec.makeMeasureSpec(0,
-//                            View.MeasureSpec.UNSPECIFIED), View.MeasureSpec
-//                            .makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+
+
+                    val layp = mFloatViewRight!!.layoutParams as RelativeLayout.LayoutParams
+                    layp.setMargins(0, getRightMarginTopHeight(), 0, getRightMarginBottomHeight())
+                    layp.height = RelativeLayout.LayoutParams.MATCH_PARENT
+                    layp.width = getRightWidth()
+
 
                     //设置监听浮动窗口的触摸移动
                     mFloatViewRight!!.setOnTouchListener(onClick())
@@ -581,13 +677,28 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
     }
 
 
-    fun getLeftWidth():Int{
+    fun getLeftWidth(): Int {
         return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.LEFT_WIDTH, 30)
     }
 
+    fun getLeftMarginTopHeight(): Int {
+        return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_TOP, 200)
+    }
 
-    fun getRightWidth():Int{
+    fun getLeftMarginBottomHeight(): Int {
+        return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_BOTTOM, 400)
+    }
+
+    fun getRightWidth(): Int {
         return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, 30)
+    }
+
+    fun getRightMarginTopHeight(): Int {
+        return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_TOP, 200)
+    }
+
+    fun getRightMarginBottomHeight(): Int {
+        return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_BOTTOM, 400)
     }
 
     fun clickBackKey(): Boolean {

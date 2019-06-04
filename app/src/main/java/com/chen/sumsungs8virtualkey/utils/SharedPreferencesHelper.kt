@@ -18,6 +18,13 @@ enum class SharedPreferencesHelper {
     val RIGHT_WIDTH = "RIGHT_WIDTH"
 
 
+    val LEFT_MARGIN_TOP = "LEFT_MARGIN_TOP"
+    val LEFT_MARGIN_BOTTOM = "LEFT_MARGIN_BOTTOM"
+
+    val RIGHT_MARGIN_TOP = "RIGHT_MARGIN_TOP"
+    val RIGHT_MARGIN_BOTTOM = "RIGHT_MARGIN_BOTTOM"
+
+
     val NAME = "config"
 
     //键 值

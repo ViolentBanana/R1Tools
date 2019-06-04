@@ -19,6 +19,7 @@ import android.widget.Toast
 
 import com.chen.sumsungs8virtualkey.R
 import com.chen.sumsungs8virtualkey.REQUEST_OVERLAY
+import com.chen.sumsungs8virtualkey.app.App
 import com.chen.sumsungs8virtualkey.base.BaseFragment
 import com.chen.sumsungs8virtualkey.service.VirtualKeyService
 import com.chen.sumsungs8virtualkey.utils.CUtils
@@ -63,7 +64,6 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(activity)) {
@@ -170,6 +170,7 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
                     Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
                 checkAllpermiss()
             }
+
             R.id.color_bg_create_right -> {
                 if (VirtualKeyService.isRunning) {
 //                    VirtualKeyService.service!!.createFloatView()
@@ -220,9 +221,23 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
                 setRightWidth()
             }
 
+            R.id.color_bg_create_right_height_top ->{
+                setRightMarginTopHeight()
+            }
+
+            R.id.color_bg_create_right_height_bottom ->{
+                setRightMarginBottomHeight()
+            }
 
             R.id.color_bg_create_width -> {
                 setLeftWidth()
+            }
+
+            R.id.color_bg_create_height_bottom ->{
+                setLeftMarginBottomHeight()
+            }
+            R.id.color_bg_create_height_top ->{
+                setLeftMarginTopHeight()
             }
         }
     }
@@ -231,6 +246,9 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
         val et = EditText(activity)
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
+                SharedPreferencesHelper.INSTANCE.LEFT_WIDTH, 30).toString())
 
         AlertDialog.Builder(activity).setTitle("请输入左侧返回条宽度默认30")
                 .setIcon(android.R.drawable.sym_def_app_icon)
@@ -243,10 +261,51 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
                 }.setNegativeButton("取消", null).show()
     }
 
+    fun setLeftMarginTopHeight() {
+        val et = EditText(activity)
+
+        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
+                SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_TOP, 400).toString())
+
+        AlertDialog.Builder(activity).setTitle("请输入左侧返回条距离顶部距离0-2240，默认400")
+                .setIcon(android.R.drawable.sym_def_app_icon)
+                .setView(et)
+                .setPositiveButton("确定") { dialog, which ->
+
+                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_TOP, et.text.toString().toInt())
+                    reCreateView()
+
+                }.setNegativeButton("取消", null).show()
+    }
+
+    fun setLeftMarginBottomHeight() {
+        val et = EditText(activity)
+
+        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
+                SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_BOTTOM, 200).toString())
+
+        AlertDialog.Builder(activity).setTitle("请输入左侧返回条距离底部0-2240，默认200")
+                .setIcon(android.R.drawable.sym_def_app_icon)
+                .setView(et)
+                .setPositiveButton("确定") { dialog, which ->
+
+                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_BOTTOM, et.text.toString().toInt())
+                    reCreateView()
+
+                }.setNegativeButton("取消", null).show()
+    }
+
     fun setRightWidth() {
         val et = EditText(activity)
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
+                SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, 30).toString())
 
         AlertDialog.Builder(activity).setTitle("请输入右侧返回条宽度默认30")
                 .setIcon(android.R.drawable.sym_def_app_icon)
@@ -254,6 +313,43 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
                 .setPositiveButton("确定") { dialog, which ->
 
                     SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, et.text.toString().toInt())
+                    reCreateView()
+
+                }.setNegativeButton("取消", null).show()
+    }
+    fun setRightMarginTopHeight() {
+        val et = EditText(activity)
+
+        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
+                SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_TOP, 400).toString())
+
+        AlertDialog.Builder(activity).setTitle("请输入右侧返回条距离顶部 0-2240 默认400")
+                .setIcon(android.R.drawable.sym_def_app_icon)
+                .setView(et)
+                .setPositiveButton("确定") { dialog, which ->
+
+                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_TOP, et.text.toString().toInt())
+                    reCreateView()
+
+                }.setNegativeButton("取消", null).show()
+    }
+
+    fun setRightMarginBottomHeight() {
+        val et = EditText(activity)
+
+        et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
+
+        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
+                SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_BOTTOM, 200).toString())
+
+        AlertDialog.Builder(activity).setTitle("请输入右侧返回条距离底部 0-2240 默认200")
+                .setIcon(android.R.drawable.sym_def_app_icon)
+                .setView(et)
+                .setPositiveButton("确定") { dialog, which ->
+
+                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_BOTTOM, et.text.toString().toInt())
                     reCreateView()
 
                 }.setNegativeButton("取消", null).show()
@@ -277,12 +373,19 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
     }
 
 
+    /**
+     * 设置震感
+     */
     fun setVibratorStrength() {
+
         val et = EditText(activity)
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
 
         et.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(1))
+
+        et.setText(SharedPreferencesHelper.INSTANCE.getInt(activity,
+                SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0).toString())
 
         AlertDialog.Builder(activity).setTitle("请输入0-9的震动强度")
                 .setIcon(android.R.drawable.sym_def_app_icon)
@@ -358,9 +461,12 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
         color_bg_create_right_width.setOnClickListener(this)
         color_bg_create_width.setOnClickListener(this)
 
-
+        color_bg_create_height_bottom.setOnClickListener(this)
 
         color_bg_create_height_top.setOnClickListener(this)
+
+        color_bg_create_right_height_top.setOnClickListener(this)
+        color_bg_create_right_height_bottom.setOnClickListener(this)
 
 
 //        LogUtils.e("getNavBarHeight:" + forceTouchWizNavEnabled(activity))
@@ -373,15 +479,7 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
 
     companion object {
-        /**
-         * Use activity factory method to create a new instance of
-         * activity fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment GestureFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+
         @JvmStatic
         fun newInstance() =
                 GestureFragment()

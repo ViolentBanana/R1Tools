@@ -18,13 +18,14 @@
         5.点击自动启动，权限管理-允许被系统启动。勾选后清除后台功能依然可以使用\n
         6.在所有界面，从屏幕的左侧向右滑动，就可以实现返回键功能。</string>
     <string name="ps">ps:如果不想继续使用，卸载程序后，重启手机即可</string>
-    <string name="chen_v1_0_0">作者：CHEN 版本v1.0.1</string>
-    <string name="system_c92_gmail_com">如有问题可咨询邮箱:9853318@qq.com</string>
+    <string name="chen_v1_0_0">作者：狂暴的不呐呐</string>
+    <string name="system_c92_gmail_com">如有问题可在酷安留言，每个留言我都会回复</string>
     <string name="please_try_again">请重新开启辅助功能后尝试</string>
 
     <string name="gesture_fragment_title">手势设置</string>
     <string name="introduce_fragment_title">功能简介</string>
     <string name="test_fragment_title">试验功能</string>
+    <string name="test_fragment_tips">后期会增加常用软件，自动点击跳过广告等功能</string>
 
 
 </resources>
