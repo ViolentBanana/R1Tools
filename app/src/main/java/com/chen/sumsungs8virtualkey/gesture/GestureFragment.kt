@@ -190,16 +190,19 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
             R.id.color_bg_commit ->
                 //设置灰色
-                if (VirtualKeyService.isRunning)
+                if (VirtualKeyService.isRunning) {
                     VirtualKeyService.service!!.setBgGray()
+                    SharedPreferencesHelper.INSTANCE.putBoolean(activity, SharedPreferencesHelper.INSTANCE.TRANSLATE, false)
+                }
                 else
                     Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
 
             R.id.color_transparent ->
                 //设置透明
-                if (VirtualKeyService.isRunning)
+                if (VirtualKeyService.isRunning) {
                     VirtualKeyService.service!!.setBgTran()
-                else
+                    SharedPreferencesHelper.INSTANCE.putBoolean(activity, SharedPreferencesHelper.INSTANCE.TRANSLATE, true)
+                }else
                     Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
 
 

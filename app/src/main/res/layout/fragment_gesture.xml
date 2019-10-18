@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:fitsSystemWindows="true"
     tools:context="com.chen.sumsungs8virtualkey.gesture.GestureFragment">
 
     <android.support.v4.widget.NestedScrollView
@@ -152,9 +153,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
+                            android:layout_marginTop="15dp"
                             android:gravity="center"
                             android:text="否"
-                            android:layout_marginTop="15dp"
                             android:visibility="visible" />
 
                         <LinearLayout
@@ -176,8 +177,8 @@
                                 android:id="@+id/color_bg_create_right_width"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="设置宽度"
                                 android:layout_marginLeft="20dp"
+                                android:text="设置宽度"
                                 android:visibility="visible" />
 
                             <Button
@@ -321,7 +322,7 @@
             </LinearLayout>
 
 
-            </LinearLayout>
+        </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 

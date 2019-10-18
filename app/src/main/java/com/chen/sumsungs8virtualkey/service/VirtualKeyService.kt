@@ -284,25 +284,32 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             //获取浮动窗口视图所在布局
             mFloatLayout = inflater.inflate(R.layout.alert_window_menu, null) as RelativeLayout
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                if (Settings.canDrawOverlays(this)) {
-                    //添加mFloatLayout
-                    mWindowManager!!.addView(mFloatLayout, wmParams)
-                    //浮动窗口按钮
-                    mFloatView = mFloatLayout!!.findViewById(R.id.alert_window_imagebtn)
-                    mFloatView!!.visibility = View.VISIBLE
-                    val layp = mFloatView!!.layoutParams as RelativeLayout.LayoutParams
-                    layp.setMargins(0, getLeftMarginTopHeight(), 0, getLeftMarginBottomHeight())
-                    layp.height = RelativeLayout.LayoutParams.MATCH_PARENT
-                    layp.width = getLeftWidth()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
+                        .LENGTH_SHORT).show()
+                return
+            } else {
+                //添加mFloatLayout
+                mWindowManager!!.addView(mFloatLayout, wmParams)
+                //浮动窗口按钮
+                mFloatView = mFloatLayout!!.findViewById(R.id.alert_window_imagebtn)
+                mFloatView!!.visibility = View.VISIBLE
 
-                    //设置监听浮动窗口的触摸移动
-                    mFloatView!!.setOnTouchListener(onClick())
-
+                if (getViewTranslate()) {
+                    mFloatView?.setBackgroundColor(Color.parseColor(TRANSLATE))
                 } else {
-                    Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
-                            .LENGTH_SHORT).show()
+                    mFloatView?.setBackgroundColor(Color.parseColor(HALF_BLACK))
                 }
+                val layp = mFloatView!!.layoutParams as RelativeLayout.LayoutParams
+                layp.setMargins(0, getLeftMarginTopHeight(), 0, getLeftMarginBottomHeight())
+                layp.height = RelativeLayout.LayoutParams.MATCH_PARENT
+                layp.width = getLeftWidth()
+
+                //设置监听浮动窗口的触摸移动
+                mFloatView!!.setOnTouchListener(onClick())
+
+
+            }
         } else {
             Toast.makeText(applicationContext, "已经创建完毕", Toast.LENGTH_SHORT).show()
         }
@@ -346,27 +353,31 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             //获取浮动窗口视图所在布局
             mFloatLayoutRight = inflater.inflate(R.layout.alert_window_menu, null) as RelativeLayout
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                if (Settings.canDrawOverlays(this)) {
-                    //添加mFloatLayout
-                    mWindowManagerRight!!.addView(mFloatLayoutRight, wmParamsRight)
-                    //浮动窗口按钮
-                    mFloatViewRight = mFloatLayoutRight!!.findViewById(R.id.alert_window_imagebtn_right)
-                    mFloatViewRight!!.visibility = View.VISIBLE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
+                        .LENGTH_SHORT).show()
+            } else {
+                //添加mFloatLayout
+                mWindowManagerRight!!.addView(mFloatLayoutRight, wmParamsRight)
+                //浮动窗口按钮
+                mFloatViewRight = mFloatLayoutRight!!.findViewById(R.id.alert_window_imagebtn_right)
+                mFloatViewRight!!.visibility = View.VISIBLE
 
-
-                    val layp = mFloatViewRight!!.layoutParams as RelativeLayout.LayoutParams
-                    layp.setMargins(0, getRightMarginTopHeight(), 0, getRightMarginBottomHeight())
-                    layp.height = RelativeLayout.LayoutParams.MATCH_PARENT
-                    layp.width = getRightWidth()
-
-
-                    //设置监听浮动窗口的触摸移动
-                    mFloatViewRight!!.setOnTouchListener(onClick())
+                if (getViewTranslate()) {
+                    mFloatViewRight!!.setBackgroundColor(Color.parseColor(TRANSLATE))
                 } else {
-                    Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
-                            .LENGTH_SHORT).show()
+                    mFloatViewRight?.setBackgroundColor(Color.parseColor(HALF_BLACK))
                 }
+
+                val layp = mFloatViewRight!!.layoutParams as RelativeLayout.LayoutParams
+                layp.setMargins(0, getRightMarginTopHeight(), 0, getRightMarginBottomHeight())
+                layp.height = RelativeLayout.LayoutParams.MATCH_PARENT
+                layp.width = getRightWidth()
+
+
+                //设置监听浮动窗口的触摸移动
+                mFloatViewRight!!.setOnTouchListener(onClick())
+            }
         } else {
             Toast.makeText(applicationContext, "已经创建完毕", Toast.LENGTH_SHORT).show()
         }
@@ -700,6 +711,11 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
     fun getRightMarginBottomHeight(): Int {
         return SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_BOTTOM, 400)
     }
+
+    fun getViewTranslate(): Boolean {
+        return SharedPreferencesHelper.INSTANCE.getBoolean(App.instance!!, SharedPreferencesHelper.INSTANCE.TRANSLATE)
+    }
+
 
     fun clickBackKey(): Boolean {
         try {

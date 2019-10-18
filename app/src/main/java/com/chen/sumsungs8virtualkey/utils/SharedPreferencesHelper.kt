@@ -27,6 +27,8 @@ enum class SharedPreferencesHelper {
 
     val NAME = "config"
 
+    val TRANSLATE = "translate"
+
     //键 值
     fun putInt(mContext: Context, key: String, value: Int): Boolean {
         val sp = mContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)
