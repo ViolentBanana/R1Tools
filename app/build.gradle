@@ -6,15 +6,15 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.chen.nutpro2"
+        applicationId "com.chen.nutpro2" //酷安版本
+//        applicationId "com.chen.r1"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 6
-        versionName "1.1.1"
+        versionCode 7
+        versionName "1.1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-
     }
+
     buildTypes {
 
         debug {

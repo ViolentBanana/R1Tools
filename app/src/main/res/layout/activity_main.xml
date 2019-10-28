@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.chen.sumsungs8virtualkey.MainActivity">
+    tools:context="com.chen.r1.MainActivity">
 
     <!-- 你的内容布局-->
     <include layout="@layout/navigation_content"/>

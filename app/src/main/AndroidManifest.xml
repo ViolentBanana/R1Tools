@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.chen.sumsungs8virtualkey">
+    package="com.chen.r1">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY" />
@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".app.App"
+        android:name="com.chen.r1.app.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicSpoon">
         <activity
-            android:name=".MainActivity"
+            android:name="com.chen.r1.MainActivity"
             android:theme="@style/Theme.MusicSpoon">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,7 +26,7 @@
         </activity>
 
         <service
-            android:name=".service.VirtualKeyService"
+            android:name="com.chen.r1.service.VirtualKeyService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/service_name"
@@ -40,14 +40,14 @@
                 android:resource="@xml/ai_config" />
         </service>
 
-        <receiver android:name=".receiver.BootCompletedReceiver" >
+        <receiver android:name="com.chen.r1.receiver.BootCompletedReceiver" >
             <intent-filter>
                 <!-- 开机广播 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <service
-            android:name=".service.NotificationMonitorService"
+            android:name="com.chen.r1.service.NotificationMonitorService"
             android:label="@string/notification_description"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -56,7 +56,7 @@
         </service>
 
 
-        <activity android:name=".colorpick.ColorPickerActivity"></activity>
+        <activity android:name="com.chen.r1.colorpick.ColorPickerActivity"></activity>
     </application>
 
 </manifest>

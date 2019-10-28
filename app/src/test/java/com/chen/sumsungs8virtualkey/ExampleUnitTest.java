@@ -1,4 +1,4 @@
-package com.chen.sumsungs8virtualkey;
+package com.chen.r1;
 
 import org.junit.Test;
 

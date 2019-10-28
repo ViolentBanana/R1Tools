@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.chen.sumsungs8virtualkey.introduce.IntroduceFragment">
+    tools:context="com.chen.r1.introduce.IntroduceFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
