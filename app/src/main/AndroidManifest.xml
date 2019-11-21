@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.chen.r1">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -14,7 +15,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MusicSpoon">
+        android:theme="@style/Theme.MusicSpoon"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name="com.chen.r1.MainActivity"
             android:theme="@style/Theme.MusicSpoon">
@@ -26,7 +28,7 @@
         </activity>
 
         <service
-            android:name="com.chen.r1.service.VirtualKeyService"
+            android:name="com.chen.r1.acessbility.BaseAccessibilityService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/service_name"

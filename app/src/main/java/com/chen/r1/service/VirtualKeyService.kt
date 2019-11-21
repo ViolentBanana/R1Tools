@@ -24,12 +24,33 @@ import android.widget.Toast
 import com.chen.r1.BuildConfig
 import com.chen.r1.R
 import com.chen.r1.acessbility.AccessbilityJob
+import com.chen.r1.acessbility.BaseAccessbilityJob
+import com.chen.r1.acessbility.BaseAccessibilityService
 import com.chen.r1.app.App
 import com.chen.r1.utils.*
 import java.util.ArrayList
 
-class VirtualKeyService : AccessibilityService(), IHandleMessage {
+class VirtualKeyService : BaseAccessbilityJob(), IHandleMessage {
+    override fun getTargetPackageName(): String {
+        return PACKAGENAME
+    }
 
+    override fun onReceiveJob(event: AccessibilityEvent?) {
+    }
+
+    override fun onStopJob() {
+        destoryFlowView()
+    }
+
+    override fun isEnable(): Boolean {
+        return true
+    }
+
+    override fun onCreateJob(service: BaseAccessibilityService?) {
+        super.onCreateJob(service)
+        LogUtils.e("onCreateJob:" + service!!.serviceInfo.id)
+        mHander = WeakRefHandler(this)
+    }
     //定义浮动窗口布局
     private var mFloatLayout: RelativeLayout? = null
     private var wmParams: WindowManager.LayoutParams? = null
@@ -74,112 +95,8 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
     // XiaomiAccessibility.class
     private var mAccessbilityJobs: ArrayList<AccessbilityJob> = ArrayList()
 
-    override fun onCreate() {
-        super.onCreate()
-        init()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        LogUtils.d("grabmoney service destory")
-        if (!mAccessbilityJobs.isEmpty()) {
-            for (job in mAccessbilityJobs) {
-                job.onStopJob()
-            }
-            mAccessbilityJobs.clear()
-        }
-        service = null
-        mAccessbilityJobs.clear()
-    }
-
-    private fun init() {
-
-        mAccessbilityJobs = ArrayList()
-
-        //初始化辅助插件工作
-        for (clazz in ACCESSBILITY_JOBS) {
-            try {
-                val `object` = clazz.newInstance()
-                if (`object` is AccessbilityJob) {
-                    `object`.onCreateJob(this)
-                    mAccessbilityJobs!!.add(`object`)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-        }
-
-        //        //初始化
-        //        mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        //        mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-
-    }
-
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-        service = this
-        LogUtils.e("mVirtualService:" + service!!.serviceInfo.id)
-        //发送广播，已经连接上了
-        Toast.makeText(this, "成功开启辅助功能权限", Toast.LENGTH_SHORT).show()
-        mHander = WeakRefHandler(this)
-//        createFloatView()
-
-    }
-
-    override fun onAccessibilityEvent(event: AccessibilityEvent) {
-
-        if (BuildConfig.DEBUG) {
-            val eventType = event.eventType
-            var eventText = ""
-            LogUtils.i("==============Start====================")
-            when (eventType) {
-                AccessibilityEvent.TYPE_VIEW_CLICKED -> eventText = "TYPE_VIEW_CLICKED"
-                AccessibilityEvent.TYPE_VIEW_FOCUSED -> eventText = "TYPE_VIEW_FOCUSED"
-                AccessibilityEvent.TYPE_VIEW_LONG_CLICKED -> eventText = "TYPE_VIEW_LONG_CLICKED"
-                AccessibilityEvent.TYPE_VIEW_SELECTED -> eventText = "TYPE_VIEW_SELECTED"
-                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED -> eventText = "TYPE_VIEW_TEXT_CHANGED"
-                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> eventText = "TYPE_WINDOW_STATE_CHANGED"
-                AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED -> eventText = "TYPE_NOTIFICATION_STATE_CHANGED"
-                AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END -> eventText = "TYPE_TOUCH_EXPLORATION_GESTURE_END"
-                AccessibilityEvent.TYPE_ANNOUNCEMENT -> eventText = "TYPE_ANNOUNCEMENT"
-                AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START -> eventText = "TYPE_TOUCH_EXPLORATION_GESTURE_START"
-                AccessibilityEvent.TYPE_VIEW_HOVER_ENTER -> eventText = "TYPE_VIEW_HOVER_ENTER"
-                AccessibilityEvent.TYPE_VIEW_HOVER_EXIT -> eventText = "TYPE_VIEW_HOVER_EXIT"
-                AccessibilityEvent.TYPE_VIEW_SCROLLED -> eventText = "TYPE_VIEW_SCROLLED"
-                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED -> eventText = "TYPE_VIEW_TEXT_SELECTION_CHANGED"
-                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> eventText = "TYPE_WINDOW_CONTENT_CHANGED"
-            }
-            eventText = "$eventText:$eventType"
-            LogUtils.i(event.packageName.toString() + "")
-            LogUtils.i("界面名字:" + event.className)
-            //            LogUtils.e(event+"");
-            //            LogUtils.e(event.toString());
-            LogUtils.i(eventText)
-            LogUtils.i("=============END=====================")
-        }
-
-
-        val pkn = event.packageName.toString()
-
-        LogUtils.e("长度：" + mAccessbilityJobs!!.size)
-        if (mAccessbilityJobs != null && !mAccessbilityJobs!!.isEmpty()) {
-            for (job in mAccessbilityJobs!!) {
-                //                LogUtils.e("开始分发：" + job.isEnable() + "/" + pkn + "/" + job.getTargetPackageName());
-
-                if (pkn == job.getTargetPackageName() && job.isEnable()) {
-                    job.onReceiveJob(event)
-                }
-            }
-        }
-
-    }
-
-    override fun onInterrupt() {
-        destoryFlowView()
-        Toast.makeText(this, "断开辅助功能", Toast.LENGTH_SHORT).show()
-    }
-
+ 
+    
 
     fun getmFloatView(): TextView? {
         return if (mFloatView == null) {
@@ -208,7 +125,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             }
 
         } else {
-            Toast.makeText(applicationContext, getString(R.string.get_permiss_first), Toast.LENGTH_SHORT)
+            Toast.makeText(context, context.getString(R.string.get_permiss_first), Toast.LENGTH_SHORT)
                     .show()
         }
     }
@@ -226,7 +143,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             }
 
         } else {
-            Toast.makeText(applicationContext, getString(R.string.get_permiss_first), Toast.LENGTH_SHORT)
+            Toast.makeText(context, context.getString(R.string.get_permiss_first), Toast.LENGTH_SHORT)
                     .show()
         }
     }
@@ -235,7 +152,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
         if (mFloatViewBottom != null)
             mFloatViewBottom!!.setBackgroundColor(Color.parseColor(HALF_BLACK))
         else
-            Toast.makeText(applicationContext, getString(R.string.get_permiss_first), Toast.LENGTH_SHORT)
+            Toast.makeText(context, context.getString(R.string.get_permiss_first), Toast.LENGTH_SHORT)
                     .show()
     }
 
@@ -249,7 +166,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
     @SuppressLint("ClickableViewAccessibility")
     fun createLeftFloatView() {
 
-        if (!isRunning)
+        if (!service.isRunning)
             return
 
         if (mFloatLayout == null) {
@@ -279,12 +196,12 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             wmParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
 
 
-            val inflater = LayoutInflater.from(this)
+            val inflater = LayoutInflater.from(context)
             //获取浮动窗口视图所在布局
             mFloatLayout = inflater.inflate(R.layout.alert_window_menu, null) as RelativeLayout
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
+                Toast.makeText(context, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
                         .LENGTH_SHORT).show()
                 return
             } else {
@@ -310,7 +227,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
 
             }
         } else {
-            Toast.makeText(applicationContext, "已经创建完毕", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "已经创建完毕", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -318,7 +235,7 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
     @SuppressLint("ClickableViewAccessibility")
     fun createRightFloatView() {
 
-        if (!isRunning)
+        if (!service.isRunning)
             return
 
         if (mFloatLayoutRight == null) {
@@ -348,12 +265,12 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             wmParamsRight!!.width = getRightWidth()
             wmParamsRight!!.height = WindowManager.LayoutParams.WRAP_CONTENT
 
-            val inflater = LayoutInflater.from(this)
+            val inflater = LayoutInflater.from(context)
             //获取浮动窗口视图所在布局
             mFloatLayoutRight = inflater.inflate(R.layout.alert_window_menu, null) as RelativeLayout
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
+                Toast.makeText(context, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
                         .LENGTH_SHORT).show()
             } else {
                 //添加mFloatLayout
@@ -378,14 +295,14 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
                 mFloatViewRight!!.setOnTouchListener(onClick())
             }
         } else {
-            Toast.makeText(applicationContext, "已经创建完毕", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "已经创建完毕", Toast.LENGTH_SHORT).show()
         }
     }
 
 
     fun createBottomFloatView() {
 
-        if (!isRunning)
+        if (!service.isRunning)
             return
 
         if (mFloatLayout == null) {
@@ -413,14 +330,14 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
             //设置悬浮窗口长宽数据
             wmParams!!.width = WindowManager.LayoutParams.MATCH_PARENT
 //            wmParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
-            wmParams!!.height = Utils.dp2px(resources, 10f).toInt()
+            wmParams!!.height = Utils.dp2px(context.resources, 10f).toInt()
 
-            val inflater = LayoutInflater.from(this)
+            val inflater = LayoutInflater.from(context)
             //获取浮动窗口视图所在布局
             mFloatLayout = inflater.inflate(R.layout.alert_window_menu, null) as RelativeLayout
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                if (Settings.canDrawOverlays(this)) {
+                if (Settings.canDrawOverlays(context)) {
                     //添加mFloatLayout
                     mWindowManager!!.addView(mFloatLayout, wmParams)
                     //浮动窗口按钮
@@ -434,15 +351,15 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
                     //设置监听浮动窗口的触摸移动
                     mFloatViewBottom!!.setOnTouchListener(onClick())
                     mFloatViewBottom!!.setOnClickListener {
-                        Toast.makeText(this, "全屏了。。。", Toast
+                        Toast.makeText(context, "全屏了。。。", Toast
                                 .LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(this, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
+                    Toast.makeText(context, "ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝", Toast
                             .LENGTH_SHORT).show()
                 }
         } else {
-            Toast.makeText(applicationContext, "已经创建完毕", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "已经创建完毕", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -716,78 +633,18 @@ class VirtualKeyService : AccessibilityService(), IHandleMessage {
     }
 
 
-    fun clickBackKey(): Boolean {
-        try {
-            Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0))
-            return performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
-
-    }
-
-    fun clickRecentKey(): Boolean {
-        try {
-            Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0))
-            return performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-        } catch (e: Exception) {
-            return false
-        }
-    }
-
-    fun clickHomeKey(): Boolean {
-        try {
-            Utils.vibrator(App.instance!!, SharedPreferencesHelper.INSTANCE.getInt(App.instance!!, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0))
-            return performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
-        } catch (e: Exception) {
-            return false
-        }
-
-    }
-
     companion object {
 
 
-        var service: VirtualKeyService? = null
-            private set
+//        var service: VirtualKeyService? = null
+//            private set
 
         private val PACKAGENAME = "com.tencent.mm"
 
         private val HALF_BLACK = "#55000000"
         private val TRANSLATE = "#00000000"
 
-        private val TAG = VirtualKeyService::class.java.simpleName
+        private val TAG = VirtualKeyService::class.simpleName
 
-        /**
-         * 判断当前服务是否正在运行
-         */
-        val isRunning: Boolean
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            get() {
-                if (service == null) {
-                    return false
-                }
-                val accessibilityManager = service!!.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-                val info = service!!.serviceInfo ?: return false
-                val list = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_GENERIC)
-                val iterator = list.iterator()
-
-                var isConnect = false
-                while (iterator.hasNext()) {
-                    val i = iterator.next()
-
-                    LogUtils.e("mVirtualService:" + i.id)
-
-                    if (i.id == info.id) {
-                        isConnect = true
-                        break
-                    }
-                }
-
-                return if (!isConnect) {
-                    false
-                } else true
-            }
     }
 }

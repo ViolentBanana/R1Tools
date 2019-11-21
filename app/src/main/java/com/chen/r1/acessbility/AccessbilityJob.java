@@ -2,8 +2,7 @@ package com.chen.r1.acessbility;
 
 import android.view.accessibility.AccessibilityEvent;
 
-import com.chen.r1.service.VirtualKeyService;
-import com.chen.r1.service.VirtualKeyService;
+import com.chen.r1.acessbility.BaseAccessibilityService;
 
 /**
  * Created by CHEN on 2016/12/19.
@@ -14,7 +13,7 @@ public interface AccessbilityJob {
     String getTargetPackageName();
 
     //连接到服务
-    void onCreateJob(VirtualKeyService service);
+    void onCreateJob(BaseAccessibilityService service);
 
     //接收到更新
     void onReceiveJob(AccessibilityEvent event);
