@@ -1,5 +1,6 @@
 package com.chen.r1.acessbility
 
+
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.TargetApi
@@ -10,14 +11,11 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
 import android.widget.Toast
 import com.chen.r1.BuildConfig
-import com.chen.r1.acessbility.AccessbilityJob
 import com.chen.r1.app.App
+import com.chen.r1.service.VirtualKeyService
 import com.chen.r1.utils.LogUtils
 import com.chen.r1.utils.SharedPreferencesHelper
 import com.chen.r1.utils.Utils
-
-
-import java.util.ArrayList
 
 /**
  * Created by CHEN on 2016/12/19.
@@ -28,11 +26,10 @@ class BaseAccessibilityService : AccessibilityService() {
     private val PACKAGES = arrayOf("com.tencent.mm", "com.qc.grabmoney", "com.android.packageinstaller", "com.lenovo.security", "com.samsung.android.packageinstaller", "com.miui.securitycenter")
 
 
-    private var mAccessbilityJobs: MutableList<AccessbilityJob>? = null
+    var mAccessbilityJobs: MutableList<AccessbilityJob>? = null
 
 
     private val mWechatPackageInfo: PackageInfo? = null
-
 
     override fun onCreate() {
         super.onCreate()
@@ -55,7 +52,6 @@ class BaseAccessibilityService : AccessibilityService() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
     }
 
@@ -68,7 +64,6 @@ class BaseAccessibilityService : AccessibilityService() {
         mBaseService = this
         //发送广播，已经连接上了
         Toast.makeText(this, "已连接智能管家服务", Toast.LENGTH_SHORT).show()
-
     }
 
 
@@ -110,7 +105,6 @@ class BaseAccessibilityService : AccessibilityService() {
         if (mAccessbilityJobs != null && !mAccessbilityJobs!!.isEmpty()) {
             for (job in mAccessbilityJobs!!) {
                 //                LogUtils.e("开始分发：" + job.isEnable() + "/" + pkn + "/" + job.getTargetPackageName());
-
                 if (pkn == job.getTargetPackageName() && job.isEnable()) {
                     job.onReceiveJob(event)
                 }
@@ -135,7 +129,6 @@ class BaseAccessibilityService : AccessibilityService() {
         }
         mBaseService = null
         mAccessbilityJobs = null
-
     }
     fun clickBackKey(): Boolean {
         try {
@@ -195,17 +188,16 @@ class BaseAccessibilityService : AccessibilityService() {
             } else true
         }
 
-    companion object {
-
-
-        private val WECHAT_PACKAGENAME = "com.tencent.mm"
-        //回调处理不同的辅助功能类
-        private val ACCESSBILITY_JOBS = arrayOf<Class<*>>()//            LenovoPhoneAccessibility.class, AutoAttentWechatAccessbility.class,
-        // XiaomiAccessibility.class
-
-        private var mBaseService: BaseAccessibilityService? = null
-
-
+    fun freshView(){
 
     }
+    companion object {
+
+        //回调处理不同的辅助功能类
+        private val ACCESSBILITY_JOBS = arrayOf<Class<*>>(
+            VirtualKeyService::class.java
+        )
+        var mBaseService: BaseAccessibilityService? = null
+    }
+
 }

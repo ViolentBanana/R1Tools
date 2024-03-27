@@ -1,14 +1,11 @@
 package com.chen.r1.gesture
 
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
 import android.text.InputFilter
 import android.text.InputType
 import android.view.LayoutInflater
@@ -16,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 
 import com.chen.r1.R
 import com.chen.r1.REQUEST_OVERLAY
@@ -50,53 +48,50 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for activity fragment
         return inflater.inflate(R.layout.fragment_gesture, container, false)
     }
 
-
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(activity)) {
                 //启动Activity让用户授权
                 val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                intent.data = Uri.parse("package:${activity.packageName}")
+                intent.data = Uri.parse("package:${activity?.packageName}")
                 startActivityForResult(intent, 100)
             }
         }
     }
 
+
     fun checkAllpermiss() {
 
         //辅助功能
-        if (VirtualKeyService.isRunning) {
+        if (CUtils.isServiceRunning(activity!!)) {
             access_status!!.setText(R.string.yes)
 
-            if (VirtualKeyService.service!!.getmFloatView() == null) {
+            if (GestureWindowHelper.getmFloatView() == null) {
                 color_bg_status!!.setText(R.string.no)
             } else {
                 color_bg_status!!.setText(R.string.yes)
             }
 
-
-            if (VirtualKeyService.service!!.getmFloatViewRight() == null) {
+            if (GestureWindowHelper.getmFloatViewRight() == null) {
                 color_bg_right_status!!.setText(R.string.no)
             } else {
                 color_bg_right_status!!.setText(R.string.yes)
             }
 
-
             //通知权限
-            if (CUtils.isEnabled(activity)) {
+            if (CUtils.isEnabled(activity!!)) {
                 notification_status!!.setText(R.string.yes)
             } else {
                 notification_status!!.setText(R.string.no)
@@ -105,9 +100,9 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
         } else {
             access_status!!.setText(R.string.no)
-            if (VirtualKeyService.service != null)
-                if (VirtualKeyService.service!!.getmFloatView() != null)
-                    VirtualKeyService.service!!.destoryFlowView()
+            if (CUtils.isServiceRunning(activity!!))
+                if (GestureWindowHelper.getmFloatView() != null)
+                    GestureWindowHelper.destoryFlowView()
         }
 
 
@@ -123,22 +118,22 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
         }
 
 
-        val st = SharedPreferencesHelper.INSTANCE.getInt(activity, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0)
+        val st = SharedPreferencesHelper.INSTANCE.getInt(
+            activity!!,
+            SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH,
+            0
+        )
         if (st == 0) {
             auto_start_vibrator.text = "无震动"
         } else {
             auto_start_vibrator.text = st.toString()
         }
-
     }
 
     override fun onResume() {
         super.onResume()
         checkAllpermiss()
-
-        LogUtils.e("是否运行中：" + VirtualKeyService.isRunning)
-
-
+        LogUtils.e("是否运行中：" + CUtils.isServiceRunning(activity!!))
     }
 
 
@@ -147,7 +142,7 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
         val pkg = "com.android.settings"
         val cls = "com.android.settings.applications.InstalledAppDetails"
         intent.component = ComponentName(pkg, cls)
-        intent.data = Uri.parse("package:${activity.packageName}")
+        intent.data = Uri.parse("package:${activity!!.packageName}")
         startActivity(intent)
     }
 
@@ -160,28 +155,27 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
                 Toast.makeText(activity, "打开窗口", Toast.LENGTH_SHORT).show()
             }
 
-            R.id.access_open -> openAccessibilityServiceSettings()
+            R.id.access_open -> CUtils.openAccessibilityServiceSettings(activity!!)
 
             R.id.color_bg_create -> {
-                if (VirtualKeyService.isRunning) {
-//                    VirtualKeyService.service!!.createFloatView()
-                    VirtualKeyService.service!!.createView()
+                if (CUtils.isServiceRunning(activity!!)) {
+                    GestureWindowHelper.createView()
                 } else
                     Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
                 checkAllpermiss()
             }
 
             R.id.color_bg_create_right -> {
-                if (VirtualKeyService.isRunning) {
-//                    VirtualKeyService.service!!.createFloatView()
-                    VirtualKeyService.service!!.createRightFloatView()
+                if (CUtils.isServiceRunning(activity!!)) {
+                    GestureWindowHelper.createRightFloatView()
                 } else
                     Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
                 checkAllpermiss()
             }
+
             R.id.color_bg_destory -> {
-                if (VirtualKeyService.isRunning)
-                    VirtualKeyService.service!!.destoryFlowView()
+                if (CUtils.isServiceRunning(activity!!))
+                    GestureWindowHelper.destoryFlowView()
                 else
                     Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
                 checkAllpermiss()
@@ -190,19 +184,26 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
             R.id.color_bg_commit ->
                 //设置灰色
-                if (VirtualKeyService.isRunning) {
-                    VirtualKeyService.service!!.setBgGray()
-                    SharedPreferencesHelper.INSTANCE.putBoolean(activity, SharedPreferencesHelper.INSTANCE.TRANSLATE, false)
-                }
-                else
+                if (CUtils.isServiceRunning(activity!!)) {
+                    GestureWindowHelper.setBgGray()
+                    SharedPreferencesHelper.INSTANCE.putBoolean(
+                        activity!!,
+                        SharedPreferencesHelper.INSTANCE.TRANSLATE,
+                        false
+                    )
+                } else
                     Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
 
             R.id.color_transparent ->
                 //设置透明
-                if (VirtualKeyService.isRunning) {
-                    VirtualKeyService.service!!.setBgTran()
-                    SharedPreferencesHelper.INSTANCE.putBoolean(activity, SharedPreferencesHelper.INSTANCE.TRANSLATE, true)
-                }else
+                if (CUtils.isServiceRunning(activity!!)) {
+                    GestureWindowHelper.setBgTran()
+                    SharedPreferencesHelper.INSTANCE.putBoolean(
+                        activity!!,
+                        SharedPreferencesHelper.INSTANCE.TRANSLATE,
+                        true
+                    )
+                } else
                     Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
 
 
@@ -224,11 +225,11 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
                 setRightWidth()
             }
 
-            R.id.color_bg_create_right_height_top ->{
+            R.id.color_bg_create_right_height_top -> {
                 setRightMarginTopHeight()
             }
 
-            R.id.color_bg_create_right_height_bottom ->{
+            R.id.color_bg_create_right_height_bottom -> {
                 setRightMarginBottomHeight()
             }
 
@@ -236,10 +237,11 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
                 setLeftWidth()
             }
 
-            R.id.color_bg_create_height_bottom ->{
+            R.id.color_bg_create_height_bottom -> {
                 setLeftMarginBottomHeight()
             }
-            R.id.color_bg_create_height_top ->{
+
+            R.id.color_bg_create_height_top -> {
                 setLeftMarginTopHeight()
             }
         }
@@ -250,18 +252,26 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
 
-        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
-                SharedPreferencesHelper.INSTANCE.LEFT_WIDTH, 30).toString())
+        et.setText(
+            SharedPreferencesHelper.INSTANCE.getInt(
+                App.instance!!,
+                SharedPreferencesHelper.INSTANCE.LEFT_WIDTH, 30
+            ).toString()
+        )
 
-        AlertDialog.Builder(activity).setTitle("请输入左侧返回条宽度默认30")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
+        AlertDialog.Builder(activity!!).setTitle("请输入左侧返回条宽度默认30")
+            .setIcon(android.R.drawable.sym_def_app_icon)
+            .setView(et)
+            .setPositiveButton("确定") { dialog, which ->
 
-                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.LEFT_WIDTH, et.text.toString().toInt())
-                    reCreateView()
+                SharedPreferencesHelper.INSTANCE.putInt(
+                    activity!!,
+                    SharedPreferencesHelper.INSTANCE.LEFT_WIDTH,
+                    et.text.toString().toInt()
+                )
+                reCreateView()
 
-                }.setNegativeButton("取消", null).show()
+            }.setNegativeButton("取消", null).show()
     }
 
     fun setLeftMarginTopHeight() {
@@ -269,18 +279,26 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
 
-        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
-                SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_TOP, 400).toString())
+        et.setText(
+            SharedPreferencesHelper.INSTANCE.getInt(
+                App.instance!!,
+                SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_TOP, 400
+            ).toString()
+        )
 
-        AlertDialog.Builder(activity).setTitle("请输入左侧返回条距离顶部距离0-2240，默认400")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
+        AlertDialog.Builder(activity!!).setTitle("请输入左侧返回条距离顶部距离0-2240，默认400")
+            .setIcon(android.R.drawable.sym_def_app_icon)
+            .setView(et)
+            .setPositiveButton("确定") { dialog, which ->
 
-                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_TOP, et.text.toString().toInt())
-                    reCreateView()
+                SharedPreferencesHelper.INSTANCE.putInt(
+                    activity!!,
+                    SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_TOP,
+                    et.text.toString().toInt()
+                )
+                reCreateView()
 
-                }.setNegativeButton("取消", null).show()
+            }.setNegativeButton("取消", null).show()
     }
 
     fun setLeftMarginBottomHeight() {
@@ -288,18 +306,26 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
 
-        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
-                SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_BOTTOM, 200).toString())
+        et.setText(
+            SharedPreferencesHelper.INSTANCE.getInt(
+                App.instance!!,
+                SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_BOTTOM, 200
+            ).toString()
+        )
 
-        AlertDialog.Builder(activity).setTitle("请输入左侧返回条距离底部0-2240，默认200")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
+        AlertDialog.Builder(activity!!).setTitle("请输入左侧返回条距离底部0-2240，默认200")
+            .setIcon(android.R.drawable.sym_def_app_icon)
+            .setView(et)
+            .setPositiveButton("确定") { dialog, which ->
 
-                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_BOTTOM, et.text.toString().toInt())
-                    reCreateView()
+                SharedPreferencesHelper.INSTANCE.putInt(
+                    activity!!,
+                    SharedPreferencesHelper.INSTANCE.LEFT_MARGIN_BOTTOM,
+                    et.text.toString().toInt()
+                )
+                reCreateView()
 
-                }.setNegativeButton("取消", null).show()
+            }.setNegativeButton("取消", null).show()
     }
 
     fun setRightWidth() {
@@ -307,36 +333,53 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
 
-        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
-                SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, 30).toString())
+        et.setText(
+            SharedPreferencesHelper.INSTANCE.getInt(
+                App.instance!!,
+                SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, 30
+            ).toString()
+        )
 
-        AlertDialog.Builder(activity).setTitle("请输入右侧返回条宽度默认30")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
+        AlertDialog.Builder(activity!!).setTitle("请输入右侧返回条宽度默认30")
+            .setIcon(android.R.drawable.sym_def_app_icon)
+            .setView(et)
+            .setPositiveButton("确定") { dialog, which ->
 
-                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH, et.text.toString().toInt())
-                    reCreateView()
+                SharedPreferencesHelper.INSTANCE.putInt(
+                    activity!!,
+                    SharedPreferencesHelper.INSTANCE.RIGHT_WIDTH,
+                    et.text.toString().toInt()
+                )
+                reCreateView()
 
-                }.setNegativeButton("取消", null).show()
+            }.setNegativeButton("取消", null).show()
     }
+
     fun setRightMarginTopHeight() {
         val et = EditText(activity)
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
 
-        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
-                SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_TOP, 400).toString())
+        et.setText(
+            SharedPreferencesHelper.INSTANCE.getInt(
+                App.instance!!,
+                SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_TOP, 400
+            ).toString()
+        )
 
-        AlertDialog.Builder(activity).setTitle("请输入右侧返回条距离顶部 0-2240 默认400")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
+        AlertDialog.Builder(activity!!).setTitle("请输入右侧返回条距离顶部 0-2240 默认400")
+            .setIcon(android.R.drawable.sym_def_app_icon)
+            .setView(et)
+            .setPositiveButton("确定") { dialog, which ->
 
-                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_TOP, et.text.toString().toInt())
-                    reCreateView()
+                SharedPreferencesHelper.INSTANCE.putInt(
+                    activity!!,
+                    SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_TOP,
+                    et.text.toString().toInt()
+                )
+                reCreateView()
 
-                }.setNegativeButton("取消", null).show()
+            }.setNegativeButton("取消", null).show()
     }
 
     fun setRightMarginBottomHeight() {
@@ -344,32 +387,37 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
         et.inputType = InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
 
-        et.setText(SharedPreferencesHelper.INSTANCE.getInt(App.instance!!,
-                SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_BOTTOM, 200).toString())
+        et.setText(
+            SharedPreferencesHelper.INSTANCE.getInt(
+                App.instance!!,
+                SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_BOTTOM, 200
+            ).toString()
+        )
 
-        AlertDialog.Builder(activity).setTitle("请输入右侧返回条距离底部 0-2240 默认200")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
+        AlertDialog.Builder(activity!!).setTitle("请输入右侧返回条距离底部 0-2240 默认200")
+            .setIcon(android.R.drawable.sym_def_app_icon)
+            .setView(et)
+            .setPositiveButton("确定") { dialog, which ->
 
-                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_BOTTOM, et.text.toString().toInt())
-                    reCreateView()
+                SharedPreferencesHelper.INSTANCE.putInt(
+                    activity!!,
+                    SharedPreferencesHelper.INSTANCE.RIGHT_MARGIN_BOTTOM,
+                    et.text.toString().toInt()
+                )
+                reCreateView()
 
-                }.setNegativeButton("取消", null).show()
+            }.setNegativeButton("取消", null).show()
     }
 
 
     fun reCreateView() {
-
-
-        if (VirtualKeyService.isRunning)
-            VirtualKeyService.service!!.destoryFlowView()
+        if (CUtils.isServiceRunning(activity!!))
+            GestureWindowHelper.destoryFlowView()
         else
             Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
-        if (VirtualKeyService.isRunning) {
-            VirtualKeyService.service!!.createView()
-
-            VirtualKeyService.service!!.createRightFloatView()
+        if (CUtils.isServiceRunning(activity!!)) {
+            GestureWindowHelper.createView()
+            GestureWindowHelper.createRightFloatView()
         } else
             Toast.makeText(activity, R.string.please_try_again, Toast.LENGTH_SHORT).show()
         checkAllpermiss()
@@ -387,18 +435,26 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
         et.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(1))
 
-        et.setText(SharedPreferencesHelper.INSTANCE.getInt(activity,
-                SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0).toString())
+        et.setText(
+            SharedPreferencesHelper.INSTANCE.getInt(
+                activity!!,
+                SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, 0
+            ).toString()
+        )
 
-        AlertDialog.Builder(activity).setTitle("请输入0-9的震动强度")
-                .setIcon(android.R.drawable.sym_def_app_icon)
-                .setView(et)
-                .setPositiveButton("确定") { dialog, which ->
+        AlertDialog.Builder(activity!!).setTitle("请输入0-9的震动强度")
+            .setIcon(android.R.drawable.sym_def_app_icon)
+            .setView(et)
+            .setPositiveButton("确定") { dialog, which ->
 
-                    SharedPreferencesHelper.INSTANCE.putInt(activity, SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH, et.text.toString().toInt())
-                    checkAllpermiss()
+                SharedPreferencesHelper.INSTANCE.putInt(
+                    activity!!,
+                    SharedPreferencesHelper.INSTANCE.VIBRATOR_STRENGTH,
+                    et.text.toString().toInt()
+                )
+                checkAllpermiss()
 
-                }.setNegativeButton("取消", null).show()
+            }.setNegativeButton("取消", null).show()
     }
 
     /**
@@ -410,36 +466,20 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
             if (!Settings.canDrawOverlays(activity)) {
                 //启动Activity让用户授权
                 val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                intent.data = Uri.parse("package:${activity.packageName}")
+                intent.data = Uri.parse("package:${activity!!.packageName}")
                 startActivityForResult(intent, REQUEST_OVERLAY)
             } else {
                 Toast.makeText(activity, "已经获取浮窗权限", Toast.LENGTH_SHORT).show()
-                //                createFloatView();
+                GestureWindowHelper.createView()
             }
         } else {
-            //            createFloatView();
+            GestureWindowHelper.createView();
             Toast.makeText(activity, "已经获取浮窗权限", Toast.LENGTH_SHORT).show()
-
         }
-    }
-
-    /**
-     * 打开辅助服务的设置
-     */
-    private fun openAccessibilityServiceSettings() {
-        try {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            startActivity(intent)
-            Toast.makeText(activity, "请开启r1手势返回服务", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
     }
 
 
     private fun initView() {
-
 
         window_open.setOnClickListener(this)
         notification_btn!!.setOnClickListener(this)
@@ -485,6 +525,6 @@ class GestureFragment : BaseFragment(), View.OnClickListener {
 
         @JvmStatic
         fun newInstance() =
-                GestureFragment()
+            GestureFragment()
     }
 }

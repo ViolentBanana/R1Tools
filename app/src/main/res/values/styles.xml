@@ -2,13 +2,11 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
-
     </style>
 
     <style name="Theme.MusicSpoon" parent="Base.Theme.MusicSpoon">
         <item name="android:windowTranslucentStatus">true</item>
     </style>
-
 
     <style name="Base.Theme.MusicSpoon" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimaryDark</item>
@@ -16,4 +14,5 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/window_background</item>
     </style>
+
 </resources>

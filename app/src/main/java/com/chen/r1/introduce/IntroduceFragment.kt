@@ -1,9 +1,6 @@
 package com.chen.r1.introduce
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,11 +24,9 @@ class IntroduceFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_introduce, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         init()
-
     }
 
     private fun init(){}

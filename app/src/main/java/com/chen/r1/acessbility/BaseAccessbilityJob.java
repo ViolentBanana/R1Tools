@@ -24,5 +24,4 @@ public abstract class BaseAccessbilityJob implements AccessbilityJob {
     public BaseAccessibilityService getService() {
         return service;
     }
-
 }

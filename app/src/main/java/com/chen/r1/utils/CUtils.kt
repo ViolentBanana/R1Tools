@@ -3,10 +3,12 @@ package com.chen.r1.utils
 import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.provider.Settings
 import android.text.TextUtils
-
-import com.chen.r1.utils.LogUtils
+import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
+import com.chen.r1.R
 
 /**
  * Created by CHEN on 2018/1/9.
@@ -29,6 +31,24 @@ object CUtils {
             }
         }
         return false
+    }
+
+    /**
+     * 打开辅助服务的设置
+     */
+    fun openAccessibilityServiceSettings(activity: FragmentActivity) {
+        try {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            activity.startActivity(intent)
+            Toast.makeText(activity,
+                activity.getString(R.string.open_accessibility_tips), Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun isServiceRunning(mContext: Context):Boolean{
+        return isServiceRunning(mContext,"com.chen.r1.acessbility.BaseAccessibilityService")
     }
 
 

@@ -23,4 +23,6 @@ public interface AccessbilityJob {
 
     //此服务是否可用
     boolean isEnable();
+
+    void refreshView();
 }

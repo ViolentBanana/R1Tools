@@ -1,16 +1,11 @@
 package com.chen.r1
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.design.widget.NavigationView
-import android.support.design.widget.TabLayout
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -18,23 +13,29 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentStatePagerAdapter
 import com.chen.r1.base.BaseFragment
 import com.chen.r1.gesture.GestureFragment
+import com.chen.r1.gesture.GestureWindowHelper
 import com.chen.r1.introduce.IntroduceFragment
-import com.chen.r1.service.VirtualKeyService
 import com.chen.r1.test.TestFragment
-import com.chen.r1.BuildConfig
-import com.chen.r1.R
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.navigation_content.*
-import java.util.*
+import com.chen.r1.utils.CUtils
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.activity_main.dl_main_drawer
+import kotlinx.android.synthetic.main.activity_main.nv_main_navigation
+import kotlinx.android.synthetic.main.navigation_content.tl_tabs
+import kotlinx.android.synthetic.main.navigation_content.toolbar
+import kotlinx.android.synthetic.main.navigation_content.vp_content
 
 
 const val REQUEST_OVERLAY = 100
 
 
 class MainActivity : AppCompatActivity() {
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         val ab = supportActionBar
         ab!!.setHomeAsUpIndicator(R.drawable.ic_menu)
         ab.setDisplayHomeAsUpEnabled(true)
-
     }
 
     private fun setupDrawerContent(navigationView: NavigationView) {
@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 //        menuInflater.inflate(R.menu.menu_overaction, menu)
 //        getMenuInflater().inflate(R.menu.drawer_view, menu);
-
         return true
     }
 
@@ -112,7 +111,6 @@ class MainActivity : AppCompatActivity() {
         vp_content.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getCount(): Int {
                 return mFrags.size
-
             }
 
             override fun getItem(position: Int): Fragment {
@@ -186,7 +184,7 @@ class MainActivity : AppCompatActivity() {
             val text = view.getChildAt(0) as TextView
             text.setTextColor(resources.getColor(R.color.tabTextColorSelect))
             val anim = ObjectAnimator
-                    .ofFloat(view as View, "", 1.0f, 1.1f)
+                    .ofFloat(view as View, "scaleX", 1.0f, 1.1f)
                     .setDuration(200)
             anim.start()
             anim.addUpdateListener { animation ->
@@ -208,7 +206,7 @@ class MainActivity : AppCompatActivity() {
             val text = view.getChildAt(0) as TextView
             text.setTextColor(resources.getColor(R.color.tabTextColorSelect))
             val anim = ObjectAnimator
-                    .ofFloat(view, "", 1.0f, 0.9f)
+                    .ofFloat(view, "scaleX", 1.0f, 0.9f)
                     .setDuration(200)
             anim.start()
             anim.addUpdateListener { animation ->
@@ -226,8 +224,8 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_OVERLAY) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (Settings.canDrawOverlays(this)) {
-                    if (VirtualKeyService.isRunning)
-//                        VirtualKeyService.service!!.createView()
+                    if (CUtils.isServiceRunning(this))
+                        GestureWindowHelper.createView()
                     else
                         Toast.makeText(applicationContext, R.string.please_try_again, Toast.LENGTH_SHORT).show()
                 } else {

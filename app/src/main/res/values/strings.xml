@@ -27,5 +27,7 @@
     <string name="test_fragment_title">试验功能</string>
     <string name="test_fragment_tips">后期会增加常用软件，自动点击跳过广告等功能</string>
 
+    <string name="open_accessibility_tips">请开启r1手势返回服务</string>
+
 
 </resources>
